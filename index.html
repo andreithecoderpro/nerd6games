@@ -1,840 +1,1062 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>N6G Access</title> <style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>N6G Access</title>
+
+<style>
+
 /* =========================================================
 GENERAL
 ========================================================= */
 
-
 html,
 body {
-width: 100%;
-min-height: 100%;
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
-font-family: Arial, sans-serif;
-color: white;
-overflow: hidden;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
 }
+
+
+/* =========================================================
+CUSTOM ACCOUNT CURSORS
+========================================================= */
+
+/* Hide normal cursor AFTER LOGIN */
+
+html.account-elina,
+html.account-elina * {
+    cursor: none !important;
+}
+
+html.account-bruk,
+html.account-bruk * {
+    cursor: none !important;
+}
+
+html.account-beckett,
+html.account-beckett * {
+    cursor: none !important;
+}
+
+html.account-william,
+html.account-william * {
+    cursor: none !important;
+}
+
+html.account-ashwath,
+html.account-ashwath * {
+    cursor: none !important;
+}
+
+
+/* Custom cursor itself */
+
+#customCursor {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 48px;
+    height: 48px;
+
+    pointer-events: none;
+
+    z-index: 999999;
+
+    display: none;
+
+    transform: translate(8px, 8px);
+
+    will-change: left, top;
+}
+
+
+/* Make ELINA's stickman larger */
+
+#customCursor.elina {
+    width: 52px;
+    height: 52px;
+}
+
+
+/* Cursor SVG */
+
+#customCursor svg {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    overflow: visible;
+
+    filter:
+        drop-shadow(
+            0 2px 3px
+            rgba(0,0,0,.6)
+        );
+}
+
 
 /* =========================================================
 LOGIN SCREEN
 ========================================================= */
 
 #loginScreen {
-width: 100%;
-min-height: 100vh;
+    width: 100%;
+    min-height: 100vh;
 
-position: relative;
+    position: relative;
 
-overflow: hidden;
+    overflow: hidden;
 
-background:
-    radial-gradient(
-        circle at 25% 45%,
-        #202b52 0%,
-        transparent 28%
-    ),
-    linear-gradient(
-        135deg,
-        #080b18,
-        #11162b 55%,
-        #070912
-    );
+    background:
+        radial-gradient(
+            circle at 25% 45%,
+            #202b52 0%,
+            transparent 28%
+        ),
 
+        linear-gradient(
+            135deg,
+            #080b18,
+            #11162b 55%,
+            #070912
+        );
 }
+
 
 .stars {
-position: absolute;
+    position: absolute;
 
-width: 100%;
-height: 100%;
+    width: 100%;
+    height: 100%;
 
-left: 0;
-top: 0;
+    left: 0;
+    top: 0;
 
-pointer-events: none;
+    pointer-events: none;
 
-background-image:
-    radial-gradient(
-        circle,
-        rgba(255,255,255,.7) 1px,
-        transparent 1px
-    );
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.7) 1px,
+            transparent 1px
+        );
 
-background-size: 90px 90px;
+    background-size: 90px 90px;
 
-opacity: .25;
-
+    opacity: .25;
 }
+
 
 /* =========================================================
 LOGIN CONTAINER
 ========================================================= */
 
 .login-container {
-width: 1000px;
-max-width: 94vw;
-height: 620px;
+    width: 1000px;
+    max-width: 94vw;
 
-position: absolute;
+    height: 620px;
 
-left: 50%;
-top: 50%;
+    position: absolute;
 
-transform:
-    translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
 
+    transform:
+        translate(-50%, -50%);
 }
+
 
 /* =========================================================
 LAMP AREA
 ========================================================= */
 
 .lamp-area {
-width: 430px;
-height: 520px;
+    width: 430px;
+    height: 520px;
 
-position: absolute;
+    position: absolute;
 
-left: 0;
-top: 50px;
-
+    left: 0;
+    top: 50px;
 }
+
 
 .lamp {
-width: 330px;
-height: 440px;
+    width: 330px;
+    height: 440px;
 
-position: absolute;
+    position: absolute;
 
-left: 50px;
-top: 20px;
+    left: 50px;
+    top: 20px;
 
-transform-origin: 50% 80%;
+    transform-origin:
+        50% 80%;
 
-transition:
-    transform .5s ease;
-
+    transition:
+        transform .5s ease;
 }
+
 
 /* =========================================================
 LIGHT
 ========================================================= */
 
 .light {
-position: absolute;
+    position: absolute;
 
-width: 360px;
-height: 350px;
+    width: 360px;
+    height: 350px;
 
-left: -15px;
-top: 145px;
+    left: -15px;
+    top: 145px;
 
-background:
-    linear-gradient(
-        to bottom,
-        rgba(255,218,120,.38),
-        rgba(255,218,120,.08),
-        transparent
-    );
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,218,120,.38),
+            rgba(255,218,120,.08),
+            transparent
+        );
 
-clip-path:
-    polygon(
-        42% 0,
-        58% 0,
-        100% 100%,
-        0 100%
-    );
+    clip-path:
+        polygon(
+            42% 0,
+            58% 0,
+            100% 100%,
+            0 100%
+        );
 
-filter: blur(8px);
+    filter:
+        blur(8px);
 
-opacity: .75;
+    opacity: .75;
 
-transition:
-    opacity .4s;
-
+    transition:
+        opacity .4s;
 }
+
 
 .lamp.off .light {
-opacity: 0;
+    opacity: 0;
 }
+
 
 /* =========================================================
 LAMP SHADE
 ========================================================= */
 
 .shade {
-width: 260px;
-height: 150px;
+    width: 260px;
+    height: 150px;
 
-position: absolute;
+    position: absolute;
 
-left: 35px;
-top: 65px;
+    left: 35px;
+    top: 65px;
 
-background:
-    linear-gradient(
-        135deg,
-        #f4f0df,
-        #d7d0b8 60%,
-        #aaa38e
-    );
+    background:
+        linear-gradient(
+            135deg,
+            #f4f0df,
+            #d7d0b8 60%,
+            #aaa38e
+        );
 
-clip-path:
-    polygon(
-        20% 0,
-        80% 0,
-        100% 100%,
-        0 100%
-    );
+    clip-path:
+        polygon(
+            20% 0,
+            80% 0,
+            100% 100%,
+            0 100%
+        );
 
-border-radius: 10px;
+    border-radius: 10px;
 
-box-shadow:
-    inset 0 -12px 20px
-    rgba(0,0,0,.18),
+    box-shadow:
+        inset 0 -12px 20px
+        rgba(0,0,0,.18),
 
-    0 10px 35px
-    rgba(255,220,120,.25);
+        0 10px 35px
+        rgba(255,220,120,.25);
 
-z-index: 5;
-
+    z-index: 5;
 }
+
 
 .shade::after {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 100%;
-height: 15px;
+    width: 100%;
+    height: 15px;
 
-left: 0;
-bottom: 0;
+    left: 0;
+    bottom: 0;
 
-background: #8e8876;
+    background:
+        #8e8876;
 
-border-radius: 50%;
-
+    border-radius: 50%;
 }
+
 
 /* =========================================================
 BULB
 ========================================================= */
 
 .bulb {
-width: 55px;
-height: 55px;
+    width: 55px;
+    height: 55px;
 
-position: absolute;
+    position: absolute;
 
-left: 137px;
-top: 115px;
+    left: 137px;
+    top: 115px;
 
-border-radius: 50%;
+    border-radius: 50%;
 
-background:
-    radial-gradient(
-        circle,
-        #fff9cf,
-        #ffe48a 35%,
-        #ffbf32 65%,
-        #ff9c00
-    );
+    background:
+        radial-gradient(
+            circle,
+            #fff9cf,
+            #ffe48a 35%,
+            #ffbf32 65%,
+            #ff9c00
+        );
 
-box-shadow:
-    0 0 15px #ffe79a,
-    0 0 40px #ffd45c,
-    0 0 80px
-    rgba(255,190,50,.8);
+    box-shadow:
+        0 0 15px #ffe79a,
+        0 0 40px #ffd45c,
+        0 0 80px
+        rgba(255,190,50,.8);
 
-z-index: 4;
+    z-index: 4;
 
-transition: .4s;
-
+    transition:
+        .4s;
 }
+
 
 .lamp.off .bulb {
-background: #554f43;
+    background:
+        #554f43;
 
-box-shadow: none;
-
+    box-shadow:
+        none;
 }
+
 
 /* =========================================================
 LAMP EYES
 ========================================================= */
 
 .eye {
-position: absolute;
+    position: absolute;
 
-width: 23px;
-height: 31px;
+    width: 23px;
+    height: 31px;
 
-top: 92px;
+    top: 92px;
 
-background: #151515;
+    background:
+        #151515;
 
-border-radius: 50%;
+    border-radius: 50%;
 
-z-index: 8;
-
+    z-index: 8;
 }
+
 
 .eye.left {
-left: 100px;
+    left: 100px;
 }
+
 
 .eye.right {
-right: 100px;
+    right: 100px;
 }
+
 
 .eye::after {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 7px;
-height: 10px;
+    width: 7px;
+    height: 10px;
 
-left: 5px;
-top: 5px;
+    left: 5px;
+    top: 5px;
 
-background: white;
+    background:
+        white;
 
-border-radius: 50%;
-
+    border-radius: 50%;
 }
+
 
 /* =========================================================
 LAMP MOUTH
 ========================================================= */
 
 .mouth {
-position: absolute;
+    position: absolute;
 
-width: 35px;
-height: 17px;
+    width: 35px;
+    height: 17px;
 
-left: 112px;
-top: 128px;
+    left: 112px;
+    top: 128px;
 
-border-bottom:
-    4px solid #222;
+    border-bottom:
+        4px solid #222;
 
-border-radius:
-    0 0 40px 40px;
+    border-radius:
+        0 0 40px 40px;
 
-z-index: 8;
-
+    z-index: 8;
 }
+
 
 /* =========================================================
 LAMP ARM
 ========================================================= */
 
 .arm {
-position: absolute;
+    position: absolute;
 
-width: 24px;
-height: 170px;
+    width: 24px;
+    height: 170px;
 
-left: 153px;
-top: 205px;
+    left: 153px;
+    top: 205px;
 
-background:
-    linear-gradient(
-        to right,
-        #50566a,
-        #8a91a6,
-        #3e4353
-    );
+    background:
+        linear-gradient(
+            to right,
+            #50566a,
+            #8a91a6,
+            #3e4353
+        );
 
-border-radius: 15px;
+    border-radius: 15px;
 
-transform:
-    rotate(-8deg);
+    transform:
+        rotate(-8deg);
 
-transform-origin:
-    top center;
+    transform-origin:
+        top center;
 
-z-index: 2;
-
+    z-index: 2;
 }
+
 
 .arm::before {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 35px;
-height: 35px;
+    width: 35px;
+    height: 35px;
 
-left: -5px;
-top: -15px;
+    left: -5px;
+    top: -15px;
 
-background: #5e6476;
+    background:
+        #5e6476;
 
-border-radius: 50%;
-
+    border-radius: 50%;
 }
+
 
 .arm::after {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 32px;
-height: 32px;
+    width: 32px;
+    height: 32px;
 
-left: -4px;
-bottom: -10px;
+    left: -4px;
+    bottom: -10px;
 
-background: #5e6476;
+    background:
+        #5e6476;
 
-border-radius: 50%;
-
+    border-radius: 50%;
 }
+
 
 /* =========================================================
 LAMP BASE
 ========================================================= */
 
 .base {
-position: absolute;
+    position: absolute;
 
-width: 190px;
-height: 50px;
+    width: 190px;
+    height: 50px;
 
-left: 70px;
-bottom: 15px;
+    left: 70px;
+    bottom: 15px;
 
-background:
-    linear-gradient(
-        to bottom,
-        #646a7c,
-        #303442
-    );
+    background:
+        linear-gradient(
+            to bottom,
+            #646a7c,
+            #303442
+        );
 
-border-radius: 50%;
+    border-radius: 50%;
 
-box-shadow:
-    0 15px 30px
-    rgba(0,0,0,.5);
+    box-shadow:
+        0 15px 30px
+        rgba(0,0,0,.5);
 
-z-index: 3;
-
+    z-index: 3;
 }
+
 
 .base::before {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 100px;
-height: 45px;
+    width: 100px;
+    height: 45px;
 
-left: 45px;
-top: -25px;
+    left: 45px;
+    top: -25px;
 
-background: #505667;
+    background:
+        #505667;
 
-border-radius: 50%;
-
+    border-radius: 50%;
 }
+
 
 /* =========================================================
 LAMP SWITCH
 ========================================================= */
 
 .switch {
-position: absolute;
+    position: absolute;
 
-width: 52px;
-height: 27px;
+    width: 52px;
+    height: 27px;
 
-right: 30px;
-bottom: 85px;
+    right: 30px;
+    bottom: 85px;
 
-border: none;
+    border: none;
 
-border-radius: 20px;
+    border-radius: 20px;
 
-background: #393e50;
+    background:
+        #393e50;
 
-cursor: pointer;
+    cursor: pointer;
 
-z-index: 10;
-
+    z-index: 10;
 }
+
 
 .switch::after {
-content: "";
+    content: "";
 
-position: absolute;
+    position: absolute;
 
-width: 21px;
-height: 21px;
+    width: 21px;
+    height: 21px;
 
-left: 3px;
-top: 3px;
+    left: 3px;
+    top: 3px;
 
-background: #777d8d;
+    background:
+        #777d8d;
 
-border-radius: 50%;
+    border-radius: 50%;
 
-transition: .3s;
-
+    transition:
+        .3s;
 }
+
 
 .lamp:not(.off) .switch {
-background: #e4a832;
+    background:
+        #e4a832;
 }
+
 
 .lamp:not(.off) .switch::after {
-left: 28px;
+    left: 28px;
 
-background: white;
-
+    background:
+        white;
 }
+
 
 /* =========================================================
 LAMP ANIMATIONS
 ========================================================= */
 
 .lamp.focus-code {
-transform:
-rotate(5deg)
-translateY(-5px);
+    transform:
+        rotate(5deg)
+        translateY(-5px);
 }
 
+
 .lamp.happy {
-animation:
-happyLamp .7s ease;
+    animation:
+        happyLamp .7s ease;
 }
+
 
 @keyframes happyLamp {
 
-0%,
-100% {
-    transform: rotate(0);
+    0%,
+    100% {
+        transform:
+            rotate(0);
+    }
+
+    25% {
+        transform:
+            rotate(-7deg);
+    }
+
+    75% {
+        transform:
+            rotate(7deg);
+    }
+
 }
 
-25% {
-    transform: rotate(-7deg);
-}
-
-75% {
-    transform: rotate(7deg);
-}
-
-}
 
 /* =========================================================
 LOGIN CARD
 ========================================================= */
 
 .login-card {
-width: 390px;
+    width: 390px;
 
-position: absolute;
+    position: absolute;
 
-right: 0;
-top: 100px;
+    right: 0;
+    top: 100px;
 
-padding: 42px;
+    padding: 42px;
 
-border-radius: 28px;
+    border-radius: 28px;
 
-background:
-    rgba(19,24,45,.82);
+    background:
+        rgba(19,24,45,.82);
 
-border:
-    1px solid
-    rgba(255,255,255,.12);
+    border:
+        1px solid
+        rgba(255,255,255,.12);
 
-backdrop-filter: blur(18px);
+    backdrop-filter:
+        blur(18px);
 
-box-shadow:
-    0 25px 80px
-    rgba(0,0,0,.5),
+    box-shadow:
+        0 25px 80px
+        rgba(0,0,0,.5),
 
-    inset 0 1px
-    rgba(255,255,255,.08);
+        inset 0 1px
+        rgba(255,255,255,.08);
 
+    box-sizing: border-box;
 }
+
 
 .login-card h1 {
-font-size: 38px;
+    font-size: 38px;
 
-margin-bottom: 8px;
-
+    margin-bottom:
+        8px;
 }
+
 
 .subtitle {
-color: #9fa6bd;
+    color:
+        #9fa6bd;
 
-margin-bottom: 30px;
+    margin-bottom:
+        30px;
 
-font-size: 15px;
-
+    font-size:
+        15px;
 }
+
 
 /* =========================================================
 INPUT
 ========================================================= */
 
 .input-group {
-margin-bottom: 20px;
+    margin-bottom:
+        20px;
 }
+
 
 .input-group label {
-display: block;
+    display:
+        block;
 
-margin-bottom: 8px;
+    margin-bottom:
+        8px;
 
-font-size: 13px;
+    font-size:
+        13px;
 
-color: #c7cbda;
-
+    color:
+        #c7cbda;
 }
+
 
 .input-box {
-position: relative;
+    position:
+        relative;
 }
+
 
 .input-box input {
-width: 100%;
-height: 55px;
+    width:
+        100%;
 
-padding:
-    0 48px
-    0 17px;
+    height:
+        55px;
 
-border:
-    1px solid #343a53;
+    padding:
+        0 48px
+        0 17px;
 
-border-radius: 14px;
+    border:
+        1px solid #343a53;
 
-outline: none;
+    border-radius:
+        14px;
 
-background: #11162a;
+    outline:
+        none;
 
-color: white;
+    background:
+        #11162a;
 
-font-size: 15px;
+    color:
+        white;
 
-transition: .3s;
+    font-size:
+        15px;
 
+    transition:
+        .3s;
+
+    box-sizing:
+        border-box;
 }
+
 
 .input-box input:focus {
-border-color: #e8b64d;
+    border-color:
+        #e8b64d;
 
-box-shadow:
-    0 0 0 3px
-    rgba(232,182,77,.12);
-
+    box-shadow:
+        0 0 0 3px
+        rgba(232,182,77,.12);
 }
+
 
 .code-icon {
-position: absolute;
+    position:
+        absolute;
 
-right: 17px;
-top: 17px;
+    right:
+        17px;
 
+    top:
+        17px;
 }
+
 
 /* =========================================================
 LOGIN BUTTON
 ========================================================= */
 
 .login-btn {
-width: 100%;
-height: 55px;
+    width:
+        100%;
 
-border: none;
+    height:
+        55px;
 
-border-radius: 14px;
+    border:
+        none;
 
-background:
-    linear-gradient(
-        135deg,
-        #ffd66b,
-        #e6a62e
-    );
+    border-radius:
+        14px;
 
-color: #18130a;
+    background:
+        linear-gradient(
+            135deg,
+            #ffd66b,
+            #e6a62e
+        );
 
-font-size: 16px;
+    color:
+        #18130a;
 
-font-weight: bold;
+    font-size:
+        16px;
 
-cursor: pointer;
+    font-weight:
+        bold;
 
-box-shadow:
-    0 10px 30px
-    rgba(230,166,46,.2);
+    cursor:
+        pointer;
 
-transition: .25s;
+    box-shadow:
+        0 10px 30px
+        rgba(230,166,46,.2);
 
+    transition:
+        .25s;
 }
+
 
 .login-btn:hover {
-transform:
-translateY(-2px);
+    transform:
+        translateY(-2px);
 
-box-shadow:
-    0 15px 35px
-    rgba(230,166,46,.3);
-
+    box-shadow:
+        0 15px 35px
+        rgba(230,166,46,.3);
 }
+
 
 .login-btn:active {
-transform:
-translateY(1px);
+    transform:
+        translateY(1px);
 }
+
 
 /* =========================================================
 MESSAGE
 ========================================================= */
 
 .message {
-min-height: 22px;
+    min-height:
+        22px;
 
-text-align: center;
+    text-align:
+        center;
 
-margin-top: 18px;
+    margin-top:
+        18px;
 
-font-size: 14px;
-
+    font-size:
+        14px;
 }
+
 
 .message.success {
-color: #7ee2a8;
+    color:
+        #7ee2a8;
 }
 
+
 .message.error {
-color: #ff8585;
+    color:
+        #ff8585;
 }
+
 
 /* =========================================================
 N6G HUB
 ========================================================= */
 
 #hub {
-display: none;
+    display:
+        none;
 
-width: 100%;
-min-height: 100vh;
+    width:
+        100%;
 
-overflow-y: auto;
+    min-height:
+        100vh;
 
-text-align: center;
+    overflow-y:
+        auto;
 
-background:
-    linear-gradient(
-        135deg,
-        #0f172a,
-        #1e3a8a,
-        #312e81
-    );
+    text-align:
+        center;
 
-color: white;
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1e3a8a,
+            #312e81
+        );
 
+    color:
+        white;
 }
+
 
 .hub-container {
-width: 100%;
-max-width: 1000px;
+    width:
+        100%;
 
-margin:
-    0 auto;
+    max-width:
+        1000px;
 
-padding:
-    50px 20px;
+    margin:
+        0 auto;
 
+    padding:
+        50px 20px;
+
+    box-sizing:
+        border-box;
 }
+
 
 .hub-title {
-font-size: 70px;
+    font-size:
+        70px;
 
-margin:
-    20px 0 10px;
+    margin:
+        20px 0 10px;
 
-letter-spacing: 8px;
+    letter-spacing:
+        8px;
 
-text-shadow:
-    0 0 20px #60a5fa;
-
+    text-shadow:
+        0 0 20px #60a5fa;
 }
+
 
 .hub-subtitle {
-font-size: 20px;
+    font-size:
+        20px;
 
-color: #bfdbfe;
+    color:
+        #bfdbfe;
 
-margin-bottom: 40px;
-
+    margin-bottom:
+        40px;
 }
+
 
 /* =========================================================
 HUB BUTTONS
 ========================================================= */
 
 .buttons {
-text-align: center;
+    text-align:
+        center;
 
-margin-bottom: 50px;
-
+    margin-bottom:
+        50px;
 }
+
 
 .hub-button {
-display: inline-flex;
-align-items: center;
-justify-content: center;
+    display:
+        inline-flex;
 
-margin: 10px;
+    align-items:
+        center;
 
-border: none;
-border-radius: 15px;
-padding: 15px 30px;
+    justify-content:
+        center;
 
-background:
-    linear-gradient(
-        135deg,
-        #38bdf8,
-        #2563eb
-    );
+    margin:
+        10px;
 
-box-shadow:
-    0 8px 20px
-    rgba(0,0,0,.3);
+    border:
+        none;
 
-transition: .25s;
-cursor: pointer;
+    border-radius:
+        15px;
 
-/* Make links and buttons look identical */
-color: white;
-text-decoration: none;
-font-family: inherit;
-font-size: 20px;
-font-weight: bold;
-line-height: 1.2;
-appearance: none;
--webkit-appearance: none;
-box-sizing: border-box;
+    padding:
+        15px 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #38bdf8,
+            #2563eb
+        );
+
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,.3);
+
+    transition:
+        .25s;
+
+    cursor:
+        pointer;
+
+    color:
+        white;
+
+    text-decoration:
+        none;
+
+    font-family:
+        inherit;
+
+    font-size:
+        20px;
+
+    font-weight:
+        bold;
+
+    line-height:
+        1.2;
+
+    appearance:
+        none;
+
+    -webkit-appearance:
+        none;
+
+    box-sizing:
+        border-box;
 }
 
+
 .hub-button:hover {
-transform:
-translateY(-5px)
-scale(1.05);
+    transform:
+        translateY(-5px)
+        scale(1.05);
 
-box-shadow:
-    0 12px 30px
-    rgba(96,165,250,.5);
-
+    box-shadow:
+        0 12px 30px
+        rgba(96,165,250,.5);
 }
 
 
@@ -843,544 +1065,671 @@ GALLERY
 ========================================================= */
 
 .gallery {
-text-align: center;
+    text-align:
+        center;
 }
+
 
 .gallery img {
-display: inline-block;
+    display:
+        inline-block;
 
-width: 350px;
-max-width: 90%;
+    width:
+        350px;
 
-height: 250px;
+    max-width:
+        90%;
 
-margin: 10px;
+    height:
+        250px;
 
-object-fit: cover;
+    margin:
+        10px;
 
-border-radius: 20px;
+    object-fit:
+        cover;
 
-border:
-    3px solid
-    rgba(255,255,255,.3);
+    border-radius:
+        20px;
 
-box-shadow:
-    0 10px 30px
-    rgba(0,0,0,.4);
+    border:
+        3px solid
+        rgba(255,255,255,.3);
 
-transition: .3s;
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.4);
 
+    transition:
+        .3s;
 }
+
 
 .gallery img:hover {
-transform:
-scale(1.04);
+    transform:
+        scale(1.04);
 
-border-color:
-    #60a5fa;
+    border-color:
+        #60a5fa;
 
-box-shadow:
-    0 0 30px
-    rgba(96,165,250,.5);
-
+    box-shadow:
+        0 0 30px
+        rgba(96,165,250,.5);
 }
+
 
 footer {
-margin-top: 50px;
+    margin-top:
+        50px;
 
-color: #93c5fd;
-
+    color:
+        #93c5fd;
 }
+
 
 /* =========================================================
 INFO PAGE
 ========================================================= */
 
 #infoPage {
-display: none;
+    display:
+        none;
 
-position: fixed;
+    position:
+        fixed;
 
-inset: 0;
+    inset:
+        0;
 
-overflow-y: auto;
+    overflow-y:
+        auto;
 
-text-align: center;
+    text-align:
+        center;
 
-background:
-    linear-gradient(
-        135deg,
-        #080b18,
-        #11162b 55%,
-        #070912
-    );
+    background:
+        linear-gradient(
+            135deg,
+            #080b18,
+            #11162b 55%,
+            #070912
+        );
 
-color: white;
+    color:
+        white;
 
-z-index: 100;
-
+    z-index:
+        100;
 }
+
 
 .info-container {
-width: 100%;
-max-width: 850px;
+    width:
+        100%;
 
-margin: 0 auto;
+    max-width:
+        850px;
 
-padding:
-    35px 20px 60px;
+    margin:
+        0 auto;
 
+    padding:
+        35px 20px 60px;
+
+    box-sizing:
+        border-box;
 }
+
 
 .info-container h1 {
-font-size: 60px;
+    font-size:
+        60px;
 
-margin:
-    20px 0 10px;
+    margin:
+        20px 0 10px;
 
-letter-spacing: 5px;
+    letter-spacing:
+        5px;
 
-color: #ffd66b;
+    color:
+        #ffd66b;
 
-text-shadow:
-    0 0 20px
-    rgba(255,214,107,.5);
-
+    text-shadow:
+        0 0 20px
+        rgba(255,214,107,.5);
 }
+
 
 .info-intro {
-max-width: 650px;
+    max-width:
+        650px;
 
-margin:
-    0 auto 35px;
+    margin:
+        0 auto 35px;
 
-color: #b9c0d5;
+    color:
+        #b9c0d5;
 
-font-size: 18px;
+    font-size:
+        18px;
 
-line-height: 1.6;
-
+    line-height:
+        1.6;
 }
+
 
 .info-card {
-margin: 20px 0;
+    margin:
+        20px 0;
 
-padding: 25px;
+    padding:
+        25px;
 
-text-align: left;
+    text-align:
+        left;
 
-border-radius: 20px;
+    border-radius:
+        20px;
 
-background:
-    rgba(19,24,45,.82);
+    background:
+        rgba(19,24,45,.82);
 
-border:
-    1px solid
-    rgba(255,255,255,.12);
+    border:
+        1px solid
+        rgba(255,255,255,.12);
 
-box-shadow:
-    0 15px 40px
-    rgba(0,0,0,.3);
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.3);
 
-backdrop-filter: blur(12px);
+    backdrop-filter:
+        blur(12px);
 
-transition: .25s;
-
+    transition:
+        .25s;
 }
+
 
 .info-card:hover {
-transform:
-translateY(-3px);
+    transform:
+        translateY(-3px);
 
-border-color:
-    rgba(255,214,107,.4);
+    border-color:
+        rgba(255,214,107,.4);
 
-box-shadow:
-    0 20px 50px
-    rgba(0,0,0,.4);
-
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.4);
 }
+
 
 .info-card h2 {
-margin-bottom: 10px;
+    margin-bottom:
+        10px;
 
-color: #ffd66b;
-
+    color:
+        #ffd66b;
 }
+
 
 .info-card p {
-color: #c7cbda;
+    color:
+        #c7cbda;
 
-line-height: 1.6;
-
+    line-height:
+        1.6;
 }
+
 
 .back-button {
-display: block;
+    display:
+        block;
 
-border: none;
+    border:
+        none;
 
-border-radius: 12px;
+    border-radius:
+        12px;
 
-padding:
-    12px 20px;
+    padding:
+        12px 20px;
 
-background:
-    #252b42;
+    background:
+        #252b42;
 
-color: white;
+    color:
+        white;
 
-font-size: 15px;
+    font-size:
+        15px;
 
-cursor: pointer;
+    cursor:
+        pointer;
 
-transition: .25s;
-
+    transition:
+        .25s;
 }
+
 
 .back-button:hover {
-background:
-#343b58;
+    background:
+        #343b58;
 
-transform:
-    translateX(-3px);
-
+    transform:
+        translateX(-3px);
 }
+
 
 #infoPage footer {
-margin-top: 40px;
+    margin-top:
+        40px;
 
-color: #77809b;
-
+    color:
+        #77809b;
 }
 
+
 /* =========================================================
-ELINA THEME
+ELINA
 ========================================================= */
 
 #hub.elina {
-background:
-linear-gradient(
-#eeeeee,
-#bdbdbd
-);
+    background:
+        linear-gradient(
+            #eeeeee,
+            #bdbdbd
+        );
 
-color: #111;
-
+    color:
+        #111;
 }
+
 
 #hub.elina .hub-title {
-color: #111;
+    color:
+        #111;
 
-text-shadow:
-    3px 3px 0 white;
-
+    text-shadow:
+        3px 3px 0 white;
 }
+
 
 #hub.elina .hub-subtitle {
-color: #333;
+    color:
+        #333;
 }
+
 
 #hub.elina .hub-button {
-background: #111;
+    background:
+        #111;
 
-box-shadow:
-    6px 6px 0 #555;
-
+    box-shadow:
+        6px 6px 0 #555;
 }
+
 
 #hub.elina .hub-button:hover {
-box-shadow:
-9px 9px 0 #333;
+    box-shadow:
+        9px 9px 0 #333;
 }
 
-/* Elina images stay in full color */
 
 #hub.elina .gallery img {
-border-color: #111;
+    border-color:
+        #111;
 }
 
+
 #hub.elina footer {
-color: #333;
+    color:
+        #333;
 }
+
 
 /* =========================================================
 ELINA IMAGE
 ========================================================= */
 
 #elinaImage {
-display: none;
+    display:
+        none;
 
-position: fixed;
+    position:
+        fixed;
 
-right: 5%;
-bottom: 5%;
+    right:
+        5%;
 
-width: 330px;
-max-width: 30vw;
+    bottom:
+        5%;
 
-border-radius: 20px;
+    width:
+        330px;
 
-border:
-    5px solid #111;
+    max-width:
+        30vw;
 
-box-shadow:
-    10px 10px 0 #555,
-    0 20px 40px
-    rgba(0,0,0,.35);
+    border-radius:
+        20px;
 
-object-fit: cover;
+    border:
+        5px solid #111;
 
-z-index: 20;
+    box-shadow:
+        10px 10px 0 #555,
+        0 20px 40px
+        rgba(0,0,0,.35);
 
-animation:
-    elinaImageEnter
-    .8s
-    ease-out;
+    object-fit:
+        cover;
 
+    z-index:
+        20;
+
+    animation:
+        elinaImageEnter
+        .8s
+        ease-out;
 }
+
 
 @keyframes elinaImageEnter {
 
-0% {
-    opacity: 0;
+    0% {
+        opacity:
+            0;
 
-    transform:
-        translateY(60px)
-        rotate(-5deg)
-        scale(.8);
+        transform:
+            translateY(60px)
+            rotate(-5deg)
+            scale(.8);
+    }
+
+    100% {
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            rotate(0)
+            scale(1);
+    }
+
 }
 
-100% {
-    opacity: 1;
-
-    transform:
-        translateY(0)
-        rotate(0)
-        scale(1);
-}
-
-}
 
 /* =========================================================
-BRUK PIE THEME
+BRUK
 ========================================================= */
 
 #hub.bruk {
-background:
-radial-gradient(
-circle at center,
-#fff1b8,
-#c47a32 45%,
-#6b3217 100%
-);
+    background:
+        radial-gradient(
+            circle at center,
+            #fff1b8,
+            #c47a32 45%,
+            #6b3217 100%
+        );
 }
+
 
 #hub.bruk .hub-title {
-color: #fff3c4;
+    color:
+        #fff3c4;
 
-text-shadow:
-    0 0 15px #ffb347,
-    0 0 40px #ff7b00;
-
+    text-shadow:
+        0 0 15px #ffb347,
+        0 0 40px #ff7b00;
 }
+
 
 #hub.bruk .hub-subtitle {
-color: #ffe0a3;
+    color:
+        #ffe0a3;
 }
+
 
 #hub.bruk .hub-button {
-background:
-linear-gradient(
-135deg,
-#f59e0b,
-#92400e
-);
+    background:
+        linear-gradient(
+            135deg,
+            #f59e0b,
+            #92400e
+        );
 }
+
 
 #hub.bruk .gallery img {
-border-color: #ffd166;
+    border-color:
+        #ffd166;
 }
+
 
 #hub.bruk footer {
-color: #ffd166;
+    color:
+        #ffd166;
 }
+
 
 #hub.bruk::before {
-content: "🥧";
+    content:
+        "🥧";
 
-position: fixed;
+    position:
+        fixed;
 
-left: 7%;
-top: 15%;
+    left:
+        7%;
 
-font-size: 130px;
+    top:
+        15%;
 
-animation:
-    pieFloat 3s
-    ease-in-out
-    infinite;
+    font-size:
+        130px;
 
+    animation:
+        pieFloat
+        3s
+        ease-in-out
+        infinite;
 }
+
 
 @keyframes pieFloat {
 
-0%,
-100% {
-    transform:
-        rotate(-8deg)
-        translateY(0);
+    0%,
+    100% {
+        transform:
+            rotate(-8deg)
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            rotate(8deg)
+            translateY(-20px);
+    }
+
 }
 
-50% {
-    transform:
-        rotate(8deg)
-        translateY(-20px);
-}
-
-}
 
 /* =========================================================
-BOOK THEMES
+BECKETT + WILLIAM
 ========================================================= */
 
 #hub.beckett,
 #hub.william {
-background:
-linear-gradient(
-135deg,
-#21160e,
-#5c3b20,
-#1c120b
-);
+    background:
+        linear-gradient(
+            135deg,
+            #21160e,
+            #5c3b20,
+            #1c120b
+        );
 }
+
 
 #hub.beckett .hub-title,
 #hub.william .hub-title {
-font-family: Georgia, serif;
+    font-family:
+        Georgia,
+        serif;
 
-color: #f5deb3;
+    color:
+        #f5deb3;
 
-text-shadow:
-    0 0 15px #c59b6d;
-
+    text-shadow:
+        0 0 15px #c59b6d;
 }
+
 
 #hub.beckett .hub-subtitle,
 #hub.william .hub-subtitle {
-font-family: Georgia, serif;
+    font-family:
+        Georgia,
+        serif;
 
-color: #dec29a;
-
+    color:
+        #dec29a;
 }
+
 
 #hub.beckett .hub-button,
 #hub.william .hub-button {
-background:
-linear-gradient(
-135deg,
-#8b5e34,
-#422817
-);
+    background:
+        linear-gradient(
+            135deg,
+            #8b5e34,
+            #422817
+        );
 
-border:
-    1px solid #d1a36a;
-
+    border:
+        1px solid #d1a36a;
 }
+
 
 #hub.beckett .gallery img,
 #hub.william .gallery img {
-border-color: #d1a36a;
+    border-color:
+        #d1a36a;
 }
+
 
 #hub.beckett footer,
 #hub.william footer {
-color: #cda873;
+    color:
+        #cda873;
 }
+
 
 #hub.beckett::before,
 #hub.william::before {
-content: "📖";
+    content:
+        "📖";
 
-position: fixed;
+    position:
+        fixed;
 
-right: 7%;
-top: 12%;
+    right:
+        7%;
 
-font-size: 120px;
+    top:
+        12%;
 
-transform:
-    rotate(12deg);
+    font-size:
+        120px;
 
+    transform:
+        rotate(12deg);
 }
 
+
 /* =========================================================
-ASHWATH MATH THEME
+ASHWATH
 ========================================================= */
 
 #hub.ashwath {
-background:
-linear-gradient(
-135deg,
-#071a12,
-#064e3b,
-#022c22
-);
+    background:
+        linear-gradient(
+            135deg,
+            #071a12,
+            #064e3b,
+            #022c22
+        );
 }
+
 
 #hub.ashwath .hub-title {
-color: #86efac;
+    color:
+        #86efac;
 
-text-shadow:
-    0 0 15px #22c55e,
-    0 0 35px #16a34a;
-
+    text-shadow:
+        0 0 15px #22c55e,
+        0 0 35px #16a34a;
 }
+
 
 #hub.ashwath .hub-subtitle {
-color: #a7f3d0;
+    color:
+        #a7f3d0;
 }
+
 
 #hub.ashwath .hub-button {
-background:
-linear-gradient(
-135deg,
-#10b981,
-#047857
-);
+    background:
+        linear-gradient(
+            135deg,
+            #10b981,
+            #047857
+        );
 }
+
 
 #hub.ashwath .gallery img {
-border-color: #34d399;
+    border-color:
+        #34d399;
 }
+
 
 #hub.ashwath footer {
-color: #6ee7b7;
+    color:
+        #6ee7b7;
 }
+
 
 #hub.ashwath::before {
-content:
-"∑ π √ x² ∫";
+    content:
+        "∑ π √ x² ∫";
 
-position: fixed;
+    position:
+        fixed;
 
-left: 0;
-right: 0;
+    left:
+        0;
 
-top: 50%;
+    right:
+        0;
 
-text-align: center;
+    top:
+        50%;
 
-font-size: 70px;
+    text-align:
+        center;
 
-letter-spacing: 25px;
+    font-size:
+        70px;
 
-color:
-    rgba(110,231,183,.08);
+    letter-spacing:
+        25px;
 
-pointer-events: none;
+    color:
+        rgba(110,231,183,.08);
 
+    pointer-events:
+        none;
 }
+
 
 /* =========================================================
 MOBILE
@@ -1388,206 +1737,271 @@ MOBILE
 
 @media (max-width: 850px) {
 
-body {
-    overflow-y: auto;
+    body {
+        overflow-y:
+            auto;
+    }
+
+    #loginScreen {
+        overflow-y:
+            auto;
+    }
+
+    .login-container {
+        position:
+            relative;
+
+        width:
+            100%;
+
+        max-width:
+            430px;
+
+        height:
+            auto;
+
+        left:
+            auto;
+
+        top:
+            auto;
+
+        transform:
+            none;
+
+        margin:
+            0 auto;
+
+        padding:
+            20px 0 50px;
+    }
+
+    .lamp-area {
+        position:
+            relative;
+
+        left:
+            auto;
+
+        top:
+            auto;
+
+        margin:
+            0 auto;
+
+        transform:
+            scale(.75);
+    }
+
+    .login-card {
+        position:
+            relative;
+
+        right:
+            auto;
+
+        top:
+            auto;
+
+        margin:
+            -70px auto 0;
+
+        width:
+            min(390px, 92vw);
+    }
+
+    .hub-title {
+        font-size:
+            50px;
+    }
+
+    .gallery img {
+        width:
+            90%;
+    }
+
+    #elinaImage {
+        position:
+            relative;
+
+        right:
+            auto;
+
+        bottom:
+            auto;
+
+        display:
+            none;
+
+        width:
+            80%;
+
+        max-width:
+            350px;
+
+        margin:
+            20px auto;
+    }
+
+    .info-container {
+        padding:
+            25px 15px 50px;
+    }
+
+    .info-container h1 {
+        font-size:
+            42px;
+    }
+
+    .info-intro {
+        font-size:
+            16px;
+    }
+
+    .info-card {
+        padding:
+            20px;
+    }
+
+    .back-button {
+        margin-bottom:
+            10px;
+    }
+
 }
 
-#loginScreen {
-    overflow-y: auto;
-}
+</style>
 
-.login-container {
-    position: relative;
+</head>
 
-    width: 100%;
-    max-width: 430px;
 
-    height: auto;
+<body>
 
-    left: auto;
-    top: auto;
 
-    transform: none;
+<!-- =======================================================
+CUSTOM CURSOR
+======================================================= -->
 
-    margin:
-        0 auto;
+<div
+    id="customCursor"
+    aria-hidden="true">
+</div>
 
-    padding:
-        20px 0 50px;
-}
 
-.lamp-area {
-    position: relative;
+<!-- =======================================================
+LOGIN SCREEN
+======================================================= -->
 
-    left: auto;
-    top: auto;
+<div id="loginScreen">
 
-    margin:
-        0 auto;
-
-    transform:
-        scale(.75);
-}
-
-.login-card {
-    position: relative;
-
-    right: auto;
-    top: auto;
-
-    margin:
-        -70px auto 0;
-
-    width:
-        min(390px, 92vw);
-}
-
-.hub-title {
-    font-size: 50px;
-}
-
-.gallery img {
-    width: 90%;
-}
-
-#elinaImage {
-    position: relative;
-
-    right: auto;
-    bottom: auto;
-
-    display: none;
-
-    width: 80%;
-    max-width: 350px;
-
-    margin:
-        20px auto;
-}
-
-.info-container {
-    padding:
-        25px 15px 50px;
-}
-
-.info-container h1 {
-    font-size: 42px;
-}
-
-.info-intro {
-    font-size: 16px;
-}
-
-.info-card {
-    padding: 20px;
-}
-
-.back-button {
-    margin-bottom: 10px;
-}
-
-}
-
-</style> </head> <body> <!-- ======================================================= LOGIN SCREEN ======================================================= --> <div id="loginScreen">
 <div class="stars"></div>
 
 <div class="login-container">
 
-    <!-- LAMP -->
 
-    <div class="lamp-area">
+<!-- LAMP -->
 
-        <div
-            class="lamp"
-            id="lamp">
+<div class="lamp-area">
 
-            <div class="light"></div>
+<div
+    class="lamp"
+    id="lamp">
 
-            <div class="shade">
+<div class="light"></div>
 
-                <div class="bulb"></div>
+<div class="shade">
 
-                <div class="eye left"></div>
+<div class="bulb"></div>
 
-                <div class="eye right"></div>
+<div class="eye left"></div>
 
-                <div class="mouth"></div>
+<div class="eye right"></div>
 
-            </div>
-
-            <div class="arm"></div>
-
-            <div class="base"></div>
-
-            <button
-                class="switch"
-                id="lampSwitch"
-                type="button">
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- LOGIN CARD -->
-
-    <div class="login-card">
-
-        <h1>
-            Welcome
-        </h1>
-
-        <p class="subtitle">
-            Enter your access code to continue.
-        </p>
-
-        <form id="loginForm">
-
-            <div class="input-group">
-
-                <label for="code">
-                    Access Code
-                </label>
-
-                <div class="input-box">
-
-                    <input
-                        type="text"
-                        id="code"
-                        placeholder="Enter access code"
-                        autocomplete="off"
-                        required
-                    >
-
-                    <span class="code-icon">
-                        🔐
-                    </span>
-
-                </div>
-
-            </div>
-
-            <button
-                class="login-btn"
-                type="submit">
-
-                Enter
-
-            </button>
-
-            <div
-                class="message"
-                id="message">
-            </div>
-
-        </form>
-
-    </div>
+<div class="mouth"></div>
 
 </div>
 
-</div> <!-- ======================================================= N6G HUB ======================================================= --> <div id="hub">
-<!-- ELINA IMAGE -->
+<div class="arm"></div>
+
+<div class="base"></div>
+
+<button
+    class="switch"
+    id="lampSwitch"
+    type="button">
+</button>
+
+</div>
+
+</div>
+
+
+<!-- LOGIN CARD -->
+
+<div class="login-card">
+
+<h1>
+Welcome
+</h1>
+
+<p class="subtitle">
+Enter your access code to continue.
+</p>
+
+<form id="loginForm">
+
+<div class="input-group">
+
+<label for="code">
+Access Code
+</label>
+
+<div class="input-box">
+
+<input
+    type="text"
+    id="code"
+    placeholder="Enter access code"
+    autocomplete="off"
+    required
+>
+
+<span class="code-icon">
+🔐
+</span>
+
+</div>
+
+</div>
+
+<button
+    class="login-btn"
+    type="submit">
+
+Enter
+
+</button>
+
+<div
+    class="message"
+    id="message">
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+N6G HUB
+======================================================= -->
+
+<div id="hub">
+
 
 <img
     id="elinaImage"
@@ -1595,149 +2009,174 @@ body {
     alt="Elina theme image"
 >
 
+
 <div class="hub-container">
 
-    <h1 class="hub-title">
-        N6G
-    </h1>
+<h1 class="hub-title">
+N6G
+</h1>
 
-    <div class="hub-subtitle">
-        Welcome to my game hub
-    </div>
+<div class="hub-subtitle">
+Welcome to my game hub
+</div>
 
-    <div class="buttons">
 
-        <a
-            class="hub-button"
-            href="snake.html">
-            🐍 Snake
-        </a>
+<div class="buttons">
 
-        <a
-            class="hub-button"
-            href="clicker.html">
-            🖱️ Clicker
-        </a>
 
-        <a
-            class="hub-button"
-            href="https://archadiax.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer">
-            🌎 Archadiax
-        </a>
+<a
+    class="hub-button"
+    href="snake.html">
+    🐍 Snake
+</a>
 
-        <a
-            class="hub-button"
-            href="plat.html"
-            target="_blank">
-            🎮 Platformer
-        </a>
 
-        <!-- INFO BUTTON -->
+<a
+    class="hub-button"
+    href="clicker.html">
+    🖱️ Clicker
+</a>
 
-        <button
-            type="button"
-            class="hub-button"
-            onclick="showInfo()">
-            ℹ️ Info
-        </button>
 
-    </div>
+<a
+    class="hub-button"
+    href="https://archadiax.vercel.app"
+    target="_blank"
+    rel="noopener noreferrer">
+    🌎 Archadiax
+</a>
 
-    <div class="gallery">
 
-        <img
-            src="IMG_0005.PNG"
-            alt="N6G image"
-        >
+<a
+    class="hub-button"
+    href="plat.html"
+    target="_blank">
+    🎮 Platformer
+</a>
 
-        <img
-            src="IMG_0021.JPG"
-            alt="N6G image"
-        >
 
-    </div>
+<button
+    type="button"
+    class="hub-button"
+    onclick="showInfo()">
 
-    <footer>
-        N6G • Games • Projects • More coming soon
-    </footer>
+    ℹ️ Info
+
+</button>
+
 
 </div>
 
-</div> <!-- ======================================================= INFO PAGE ======================================================= --> <div id="infoPage">
+
+<div class="gallery">
+
+<img
+    src="IMG_0005.PNG"
+    alt="N6G image"
+>
+
+<img
+    src="IMG_0021.JPG"
+    alt="N6G image"
+>
+
+</div>
+
+
+<footer>
+N6G • Games • Projects • More coming soon
+</footer>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+INFO PAGE
+======================================================= -->
+
+<div id="infoPage">
+
 <div class="info-container">
 
-    <button
-        class="back-button"
-        onclick="hideInfo()">
 
-        ← Back to N6G
+<button
+    class="back-button"
+    onclick="hideInfo()">
 
-    </button>
+    ← Back to N6G
 
-    <h1>
-        N6G Info
-    </h1>
+</button>
 
-    <p class="info-intro">
-        Welcome to N6G — a personal hub for games,
-        projects, experiments, and other things
-        I'm working on.
-    </p>
 
-    <!-- GAMES -->
+<h1>
+N6G Info
+</h1>
 
-    <div class="info-card">
 
-        <h2>
-            🎮 Games
-        </h2>
+<p class="info-intro">
 
-        <p>
-            Play the games available in the N6G hub,
-            including Snake and Clicker.
-        </p>
+Welcome to N6G — a personal hub for games,
+projects, experiments, and other things
+I'm working on.
 
-    </div>
+</p>
 
-    <!-- PROJECTS -->
 
-    <div class="info-card">
+<div class="info-card">
 
-        <h2>
-            🌎 Projects
-        </h2>
+<h2>
+🎮 Games
+</h2>
 
-        <p>
-            Explore projects such as Archadiax and
-            other experiments created for N6G.
-        </p>
-
-    </div>
-
-    <!-- ABOUT -->
-
-    <div class="info-card">
-
-        <h2>
-            💡 About N6G
-        </h2>
-
-        <p>
-            N6G is a place for games, ideas,
-            projects, and whatever comes next.
-        </p>
-
-    </div>
-
-    <footer>
-        N6G • Games • Projects • More coming soon
-    </footer>
+<p>
+Play the games available in the N6G hub,
+including Snake and Clicker.
+</p>
 
 </div>
 
-</div> <script>
+
+<div class="info-card">
+
+<h2>
+🌎 Projects
+</h2>
+
+<p>
+Explore projects such as Archadiax and
+other experiments created for N6G.
+</p>
+
+</div>
+
+
+<div class="info-card">
+
+<h2>
+💡 About N6G
+</h2>
+
+<p>
+N6G is a place for games, ideas,
+projects, and whatever comes next.
+</p>
+
+</div>
+
+
+<footer>
+N6G • Games • Projects • More coming soon
+</footer>
+
+</div>
+
+</div>
+
+
+<script>
+
 /* =========================================================
 GET ELEMENTS
 ========================================================= */
@@ -1769,53 +2208,446 @@ document.getElementById("elinaImage");
 const infoPage =
 document.getElementById("infoPage");
 
+const customCursor =
+document.getElementById("customCursor");
+
+
+/* =========================================================
+CUSTOM CURSOR DESIGNS
+========================================================= */
+
+const cursorSVG = {
+
+
+/* ---------------------------------------------------------
+ELINA — MINI STICKMAN
+--------------------------------------------------------- */
+
+ELINA: `
+
+<svg viewBox="0 0 52 52">
+
+<circle
+    cx="26"
+    cy="9"
+    r="7"
+    fill="#ffd7b5"
+    stroke="#111"
+    stroke-width="2.5"
+/>
+
+<circle
+    cx="23.5"
+    cy="8"
+    r="1.2"
+    fill="#111"
+/>
+
+<circle
+    cx="28.5"
+    cy="8"
+    r="1.2"
+    fill="#111"
+/>
+
+<path
+    d="M23 11 Q26 14 29 11"
+    fill="none"
+    stroke="#111"
+    stroke-width="1.5"
+    stroke-linecap="round"
+/>
+
+<path
+    d="
+    M26 16
+    L26 32
+
+    M26 20
+    L16 27
+
+    M26 20
+    L36 27
+
+    M26 32
+    L17 44
+
+    M26 32
+    L35 44
+    "
+    fill="none"
+    stroke="#111"
+    stroke-width="3.5"
+    stroke-linecap="round"
+/>
+
+</svg>
+`,
+
+
+/* ---------------------------------------------------------
+BRUK — MINI PIE
+--------------------------------------------------------- */
+
+BRUK: `
+
+<svg viewBox="0 0 52 52">
+
+<path
+    d="M8 27
+       A19 19 0 1 1 27 46
+       L27 27
+       Z"
+    fill="#e7a33c"
+    stroke="#5c2e12"
+    stroke-width="3"
+/>
+
+<path
+    d="
+    M10 27
+    L27 27
+    L27 46
+    "
+    fill="none"
+    stroke="#ffd166"
+    stroke-width="3"
+/>
+
+<path
+    d="
+    M15 18
+    Q20 13 26 16
+
+    M27 12
+    Q32 16 36 20
+    "
+    fill="none"
+    stroke="#8b451f"
+    stroke-width="3"
+    stroke-linecap="round"
+/>
+
+</svg>
+`,
+
+
+/* ---------------------------------------------------------
+BECKETT — MINI BOOK
+--------------------------------------------------------- */
+
+BECKETT: `
+
+<svg viewBox="0 0 52 52">
+
+<path
+    d="
+    M7 9
+    Q18 6 26 11
+    Q34 6 45 9
+    V43
+    Q34 40 26 45
+    Q18 40 7 43
+    Z
+    "
+    fill="#8b5e34"
+    stroke="#f5deb3"
+    stroke-width="2.5"
+/>
+
+<path
+    d="
+    M26 11
+    V44
+    "
+    stroke="#f5deb3"
+    stroke-width="2"
+/>
+
+<path
+    d="
+    M12 16
+    Q19 14 23 17
+
+    M12 22
+    Q19 20 23 23
+
+    M29 17
+    Q35 14 40 16
+
+    M29 23
+    Q35 20 40 22
+    "
+    fill="none"
+    stroke="#f5deb3"
+    stroke-width="2"
+/>
+
+</svg>
+`,
+
+
+/* ---------------------------------------------------------
+WILLIAM — MINI PEN
+--------------------------------------------------------- */
+
+WILLIAM: `
+
+<svg viewBox="0 0 52 52">
+
+<path
+    d="
+    M8 40
+    L14 30
+    L37 7
+    Q40 4 44 8
+    Q48 12 45 15
+    L22 38
+    Z
+    "
+    fill="#d1a36a"
+    stroke="#f5deb3"
+    stroke-width="2.5"
+/>
+
+<path
+    d="
+    M37 7
+    L45 15
+    "
+    stroke="#5b321b"
+    stroke-width="2"
+/>
+
+<path
+    d="
+    M8 40
+    L13 31
+    L17 35
+    Z
+    "
+    fill="#f5deb3"
+    stroke="#5b321b"
+    stroke-width="1.5"
+/>
+
+</svg>
+`,
+
+
+/* ---------------------------------------------------------
+ASHWATH — PI / MATH
+--------------------------------------------------------- */
+
+ASHWATH: `
+
+<svg viewBox="0 0 52 52">
+
+<circle
+    cx="26"
+    cy="26"
+    r="22"
+    fill="#064e3b"
+    stroke="#34d399"
+    stroke-width="3"
+/>
+
+<text
+    x="26"
+    y="35"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-size="27"
+    font-weight="bold"
+    fill="#86efac">
+
+π
+
+</text>
+
+</svg>
+`
+
+};
+
+
+/* =========================================================
+CURSOR STATE
+========================================================= */
+
+let cursorVisible = false;
+
+
+/* =========================================================
+SET ACCOUNT CURSOR
+========================================================= */
+
+function setAccountCursor(user) {
+
+    /*
+       Remove any old account classes.
+    */
+
+    document.documentElement.classList.remove(
+        "account-elina",
+        "account-bruk",
+        "account-beckett",
+        "account-william",
+        "account-ashwath"
+    );
+
+
+    /*
+       Add the new account class.
+    */
+
+    document.documentElement.classList.add(
+        "account-" + user.toLowerCase()
+    );
+
+
+    /*
+       Put the correct SVG inside the cursor.
+    */
+
+    customCursor.innerHTML =
+        cursorSVG[user];
+
+
+    /*
+       Give the cursor its account class.
+    */
+
+    customCursor.className =
+        user.toLowerCase();
+
+
+    /*
+       Show it.
+    */
+
+    customCursor.style.display =
+        "block";
+
+    cursorVisible =
+        true;
+
+}
+
+
+/* =========================================================
+MOVE CUSTOM CURSOR
+========================================================= */
+
+document.addEventListener(
+    "mousemove",
+    function(event) {
+
+        if (!cursorVisible) {
+            return;
+        }
+
+        customCursor.style.left =
+            event.clientX + "px";
+
+        customCursor.style.top =
+            event.clientY + "px";
+
+    }
+);
+
+
+/* =========================================================
+HIDE CURSOR WHEN MOUSE LEAVES WINDOW
+========================================================= */
+
+document.addEventListener(
+    "mouseleave",
+    function() {
+
+        if (cursorVisible) {
+
+            customCursor.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+SHOW CURSOR WHEN MOUSE RETURNS
+========================================================= */
+
+document.addEventListener(
+    "mouseenter",
+    function() {
+
+        if (cursorVisible) {
+
+            customCursor.style.display =
+                "block";
+
+        }
+
+    }
+);
+
+
 /* =========================================================
 LAMP SWITCH
 ========================================================= */
 
 lampSwitch.addEventListener(
-"click",
-function() {
+    "click",
+    function() {
 
-    lamp.classList.toggle("off");
+        lamp.classList.toggle("off");
 
-}
-
+    }
 );
+
 
 /* =========================================================
 LAMP REACTION
 ========================================================= */
 
 codeInput.addEventListener(
-"focus",
-function() {
+    "focus",
+    function() {
 
-    lamp.classList.add("focus-code");
+        lamp.classList.add(
+            "focus-code"
+        );
 
-}
-
+    }
 );
+
 
 codeInput.addEventListener(
-"blur",
-function() {
+    "blur",
+    function() {
 
-    lamp.classList.remove("focus-code");
+        lamp.classList.remove(
+            "focus-code"
+        );
 
-}
-
+    }
 );
+
 
 codeInput.addEventListener(
-"input",
-function() {
+    "input",
+    function() {
 
-    lamp.classList.add("focus-code");
+        lamp.classList.add(
+            "focus-code"
+        );
 
-}
-
+    }
 );
+
 
 /* =========================================================
 ACCESS CODES
@@ -1823,17 +2655,18 @@ ACCESS CODES
 
 const accessCodes = {
 
-ELINA: "elina",
+    ELINA: "elina",
 
-BRUK: "bruk",
+    BRUK: "bruk",
 
-BECKETT: "beckett",
+    BECKETT: "beckett",
 
-WILLIAM: "william",
+    WILLIAM: "william",
 
-ASHWATH: "ashwath"
+    ASHWATH: "ashwath"
 
 };
+
 
 /* =========================================================
 CHANGE TO HUB
@@ -1841,90 +2674,113 @@ CHANGE TO HUB
 
 function activateHub(user) {
 
-loginScreen.style.display =
-    "none";
 
-hub.style.display =
-    "block";
+    /* IMPORTANT:
+       Set the account cursor FIRST.
+    */
 
-hub.className =
-    user.toLowerCase();
+    setAccountCursor(user);
 
-/* Show image only for ELINA */
 
-if (user === "ELINA") {
-
-    elinaImage.style.display =
-        "block";
-
-} else {
-
-    elinaImage.style.display =
+    loginScreen.style.display =
         "none";
 
-}
+
+    hub.style.display =
+        "block";
+
+
+    hub.className =
+        user.toLowerCase();
+
+
+    /* Show image only for ELINA */
+
+    if (user === "ELINA") {
+
+        elinaImage.style.display =
+            "block";
+
+    } else {
+
+        elinaImage.style.display =
+            "none";
+
+    }
 
 }
+
 
 /* =========================================================
 LOGIN
 ========================================================= */
 
 loginForm.addEventListener(
-"submit",
-function(event) {
+    "submit",
+    function(event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    const enteredCode =
-        codeInput.value
-            .trim()
-            .toUpperCase();
 
-    if (accessCodes[enteredCode]) {
+        const enteredCode =
+            codeInput.value
+                .trim()
+                .toUpperCase();
 
-        message.textContent =
-            "✓ Access granted!";
 
-        message.className =
-            "message success";
+        if (accessCodes[enteredCode]) {
 
-        lamp.classList.remove(
-            "focus-code"
-        );
 
-        lamp.classList.add(
-            "happy"
-        );
+            message.textContent =
+                "✓ Access granted!";
 
-        setTimeout(
-            function() {
 
-                activateHub(
-                    enteredCode
-                );
+            message.className =
+                "message success";
 
-            },
-            650
-        );
 
-    } else {
+            lamp.classList.remove(
+                "focus-code"
+            );
 
-        message.textContent =
-            "✕ Invalid access code.";
 
-        message.className =
-            "message error";
+            lamp.classList.add(
+                "happy"
+            );
 
-        lamp.classList.add(
-            "focus-code"
-        );
+
+            setTimeout(
+                function() {
+
+                    activateHub(
+                        enteredCode
+                    );
+
+                },
+                650
+            );
+
+
+        } else {
+
+
+            message.textContent =
+                "✕ Invalid access code.";
+
+
+            message.className =
+                "message error";
+
+
+            lamp.classList.add(
+                "focus-code"
+            );
+
+        }
 
     }
-
-}
-
 );
+
 
 /* =========================================================
 INFO PAGE
@@ -1932,40 +2788,45 @@ INFO PAGE
 
 function showInfo() {
 
-infoPage.style.display =
-    "block";
+    infoPage.style.display =
+        "block";
 
-infoPage.scrollTop =
-    0;
+    infoPage.scrollTop =
+        0;
 
 }
+
 
 function hideInfo() {
 
-infoPage.style.display =
-    "none";
+    infoPage.style.display =
+        "none";
 
 }
+
 
 /* =========================================================
 ESCAPE KEY
 ========================================================= */
 
 document.addEventListener(
-"keydown",
-function(event) {
+    "keydown",
+    function(event) {
 
-    if (
-        event.key === "Escape" &&
-        infoPage.style.display === "block"
-    ) {
+        if (
+            event.key === "Escape" &&
+            infoPage.style.display === "block"
+        ) {
 
-        hideInfo();
+            hideInfo();
+
+        }
 
     }
-
-}
-
 );
 
-</script> </body> </html>
+</script>
+
+</body>
+</html>
+
