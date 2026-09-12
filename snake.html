@@ -1,0 +1,2634 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Snake</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f8f9fa;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #202124;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MAIN GAME
+========================================================= */
+
+.game {
+    width: min(94vw, 720px);
+    height: 100vh;
+    max-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+
+    text-align: center;
+
+    padding: 8px 0;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+h1 {
+    font-size: clamp(28px, 5vh, 46px);
+    margin: 0 0 3px;
+    font-weight: 600;
+}
+
+.subtitle {
+    color: #5f6368;
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+
+    font-size: clamp(14px, 2.5vh, 18px);
+    font-weight: bold;
+}
+
+#score {
+    color: #34a853;
+}
+
+#best {
+    color: #4285f4;
+}
+
+#level {
+    color: #fbbc04;
+}
+
+
+/* =========================================================
+   GAME BOX
+========================================================= */
+
+.gameBox {
+    position: relative;
+
+    /*
+       Board uses both width and height.
+       This prevents the controls from being pushed
+       below the screen.
+    */
+
+    width: min(100%, 70vh);
+    aspect-ratio: 1 / 1;
+
+    margin: 0 auto;
+
+    flex-shrink: 1;
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+canvas {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    background: white;
+
+    border: 3px solid #dadce0;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,.12);
+}
+
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
+#overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(255,255,255,.88);
+
+    border-radius: 12px;
+}
+
+.overlayBox {
+    background: white;
+
+    padding: 20px 25px;
+
+    border-radius: 18px;
+
+    box-shadow: 0 5px 25px rgba(0,0,0,.2);
+}
+
+.overlayBox h2 {
+    margin: 0 0 6px;
+
+    font-size: clamp(22px, 4vh, 30px);
+}
+
+.overlayBox p {
+    margin: 0;
+
+    color: #5f6368;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.buttons {
+    margin-top: 7px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+}
+
+button,
+select {
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 8px 13px;
+
+    font-size: clamp(12px, 2vh, 15px);
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button {
+    background: #4285f4;
+    color: white;
+}
+
+button:hover {
+    filter: brightness(.94);
+}
+
+#start {
+    background: #34a853;
+}
+
+#pause {
+    background: #fbbc04;
+    color: #202124;
+}
+
+#restart {
+    background: #ea4335;
+}
+
+select {
+    background: white;
+
+    color: #202124;
+
+    border: 1px solid #dadce0;
+}
+
+
+/* =========================================================
+   MOBILE CONTROLS
+========================================================= */
+
+.controls {
+    margin-top: 7px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 3px;
+}
+
+.controlRow {
+    display: flex;
+
+    gap: 3px;
+}
+
+.arrow {
+    width: clamp(45px, 7vh, 58px);
+
+    height: clamp(35px, 6vh, 46px);
+
+    padding: 0;
+
+    font-size: clamp(17px, 3vh, 21px);
+
+    background: #4285f4;
+}
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.powerups {
+    margin-top: 4px;
+
+    font-size: clamp(10px, 1.8vh, 13px);
+
+    color: #5f6368;
+}
+
+.info {
+    margin-top: 4px;
+
+    color: #5f6368;
+
+    font-size: clamp(10px, 1.8vh, 13px);
+}
+
+
+/* =========================================================
+   VERY SHORT SCREENS
+========================================================= */
+
+@media (max-height: 650px) {
+
+    .game {
+        padding: 3px 0;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 1px;
+    }
+
+    .subtitle {
+        display: none;
+    }
+
+    .stats {
+        margin-bottom: 3px;
+    }
+
+    .buttons {
+        margin-top: 3px;
+    }
+
+    .controls {
+        margin-top: 3px;
+    }
+
+    .powerups,
+    .info {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL WIDTH
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .game {
+        width: 96vw;
+    }
+
+    .buttons {
+        gap: 4px;
+    }
+
+    button,
+    select {
+        padding: 7px 10px;
+    }
+
+}
+
+
+/* =========================================================
+   EXTREMELY SHORT SCREEN
+========================================================= */
+
+@media (max-height: 500px) {
+
+    .gameBox {
+        width: min(100%, 62vh);
+    }
+
+    .arrow {
+        width: 42px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    button,
+    select {
+        padding: 5px 8px;
+    }
+
+}
+
+
+/* =========================================================
+   EXTREMELY SMALL SCREEN
+========================================================= */
+
+@media (max-height: 400px) {
+
+    .gameBox {
+        width: min(100%, 55vh);
+    }
+
+    .buttons {
+        display: none;
+    }
+
+    .controls {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   DARK THEME SUPPORT
+========================================================= */
+
+body.dark-mode {
+    background: #202124;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+
+    <h1>Snake</h1>
+
+
+    <div class="subtitle">
+        Eat, grow, and don't crash!
+    </div>
+
+
+    <div class="stats">
+
+        <div>
+            Score:
+            <span id="score">0</span>
+        </div>
+
+        <div>
+            Level:
+            <span id="level">1</span>
+        </div>
+
+        <div>
+            Best:
+            <span id="best">0</span>
+        </div>
+
+    </div>
+
+
+    <div class="gameBox">
+
+        <canvas
+            id="canvas"
+            width="600"
+            height="600">
+        </canvas>
+
+
+        <div id="overlay">
+
+            <div class="overlayBox">
+
+                <h2 id="overlayTitle">
+                    Snake
+                </h2>
+
+                <p id="overlayText">
+                    Press Start to play
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="buttons">
+
+        <button id="start">
+            Start
+        </button>
+
+        <button id="pause">
+            Pause
+        </button>
+
+        <button id="restart">
+            Restart
+        </button>
+
+
+        <select id="mapSelect">
+
+            <option value="classic">
+                Classic
+            </option>
+
+            <option value="maze">
+                Maze
+            </option>
+
+            <option value="four">
+                Four Walls
+            </option>
+
+            <option value="portal">
+                Portal World
+            </option>
+
+            <option value="islands">
+                Islands
+            </option>
+
+            <option value="arena">
+                Arena
+            </option>
+
+        </select>
+
+
+        <select id="themeSelect">
+
+            <option value="google">
+                Google
+            </option>
+
+            <option value="dark">
+                Dark
+            </option>
+
+            <option value="forest">
+                Forest
+            </option>
+
+            <option value="ocean">
+                Ocean
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="controls">
+
+        <div class="controlRow">
+
+            <button
+                class="arrow"
+                onclick="setDirection('up')">
+                ▲
+            </button>
+
+        </div>
+
+
+        <div class="controlRow">
+
+            <button
+                class="arrow"
+                onclick="setDirection('left')">
+                ◀
+            </button>
+
+            <button
+                class="arrow"
+                onclick="setDirection('down')">
+                ▼
+            </button>
+
+            <button
+                class="arrow"
+                onclick="setDirection('right')">
+                ▶
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="powerups">
+
+        🍎 Apple = +1
+        &nbsp;&nbsp;
+
+        ⭐ Golden Apple = +5
+        &nbsp;&nbsp;
+
+        ⚡ Lightning = Speed
+
+    </div>
+
+
+    <div class="info">
+
+        Arrow Keys / WASD to move • Space to pause
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SNAKE GAME
+========================================================= */
+
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+const scoreText =
+    document.getElementById("score");
+
+const bestText =
+    document.getElementById("best");
+
+const levelText =
+    document.getElementById("level");
+
+
+const overlay =
+    document.getElementById("overlay");
+
+const overlayTitle =
+    document.getElementById("overlayTitle");
+
+const overlayText =
+    document.getElementById("overlayText");
+
+
+const startButton =
+    document.getElementById("start");
+
+const pauseButton =
+    document.getElementById("pause");
+
+const restartButton =
+    document.getElementById("restart");
+
+
+const mapSelect =
+    document.getElementById("mapSelect");
+
+const themeSelect =
+    document.getElementById("themeSelect");
+
+
+/* =========================================================
+   GAME SETTINGS
+========================================================= */
+
+const GRID = 30;
+
+const SIZE =
+    canvas.width / GRID;
+
+
+let snake = [];
+
+let food = null;
+
+let bonus = null;
+
+let lightning = null;
+
+
+let walls = [];
+
+let portals = [];
+
+
+let direction = "right";
+
+let nextDirection = "right";
+
+
+let score = 0;
+
+let level = 1;
+
+
+let gameRunning = false;
+
+let paused = false;
+
+
+let timer = null;
+
+
+let baseSpeed = 130;
+
+
+let best =
+    Number(
+        localStorage.getItem("snakeBest") || 0
+    );
+
+
+bestText.textContent = best;
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+const themes = {
+
+    google: {
+
+        background: "#ffffff",
+
+        grid: "#f1f3f4",
+
+        snake: "#34a853",
+
+        body: "#4285f4",
+
+        food: "#ea4335",
+
+        wall: "#5f6368"
+
+    },
+
+
+    dark: {
+
+        background: "#202124",
+
+        grid: "#303134",
+
+        snake: "#34a853",
+
+        body: "#4285f4",
+
+        food: "#ea4335",
+
+        wall: "#9aa0a6"
+
+    },
+
+
+    forest: {
+
+        background: "#eef7ee",
+
+        grid: "#d8ead8",
+
+        snake: "#188038",
+
+        body: "#34a853",
+
+        food: "#ea4335",
+
+        wall: "#5f6368"
+
+    },
+
+
+    ocean: {
+
+        background: "#eef7ff",
+
+        grid: "#d2e3fc",
+
+        snake: "#1a73e8",
+
+        body: "#4285f4",
+
+        food: "#ea4335",
+
+        wall: "#5f6368"
+
+    }
+
+};
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+function initialize() {
+
+    snake = [
+
+        {x: 15, y: 15},
+
+        {x: 14, y: 15},
+
+        {x: 13, y: 15},
+
+        {x: 12, y: 15}
+
+    ];
+
+
+    direction = "right";
+
+    nextDirection = "right";
+
+
+    score = 0;
+
+    level = 1;
+
+
+    bonus = null;
+
+    lightning = null;
+
+
+    scoreText.textContent = 0;
+
+    levelText.textContent = 1;
+
+
+    createMap();
+
+    placeFood();
+
+    draw();
+
+}
+
+
+/* =========================================================
+   MAP CREATION
+========================================================= */
+
+function createMap() {
+
+    walls = [];
+
+    portals = [];
+
+
+    const map =
+        mapSelect.value;
+
+
+    /* CLASSIC */
+
+    if (map === "classic") {
+
+        return;
+
+    }
+
+
+    /* MAZE */
+
+    if (map === "maze") {
+
+        for (
+            let x = 5;
+            x < 25;
+            x++
+        ) {
+
+            if (
+                x !== 14 &&
+                x !== 15
+            ) {
+
+                walls.push({
+                    x: x,
+                    y: 7
+                });
+
+                walls.push({
+                    x: x,
+                    y: 22
+                });
+
+            }
+
+        }
+
+
+        for (
+            let y = 9;
+            y < 21;
+            y++
+        ) {
+
+            if (
+                y !== 14 &&
+                y !== 15
+            ) {
+
+                walls.push({
+                    x: 7,
+                    y: y
+                });
+
+                walls.push({
+                    x: 22,
+                    y: y
+                });
+
+            }
+
+        }
+
+    }
+
+
+    /* FOUR WALLS */
+
+    if (map === "four") {
+
+        for (
+            let x = 4;
+            x < 26;
+            x++
+        ) {
+
+            if (
+                x < 13 ||
+                x > 16
+            ) {
+
+                walls.push({
+                    x: x,
+                    y: 6
+                });
+
+                walls.push({
+                    x: x,
+                    y: 23
+                });
+
+            }
+
+        }
+
+
+        for (
+            let y = 8;
+            y < 22;
+            y++
+        ) {
+
+            if (
+                y < 13 ||
+                y > 16
+            ) {
+
+                walls.push({
+                    x: 6,
+                    y: y
+                });
+
+                walls.push({
+                    x: 23,
+                    y: y
+                });
+
+            }
+
+        }
+
+    }
+
+
+    /* PORTAL MAP */
+
+    if (map === "portal") {
+
+        portals = [
+
+            {
+                x: 3,
+                y: 3,
+                targetX: 26,
+                targetY: 26
+            },
+
+            {
+                x: 26,
+                y: 26,
+                targetX: 3,
+                targetY: 3
+            },
+
+            {
+                x: 26,
+                y: 3,
+                targetX: 3,
+                targetY: 26
+            },
+
+            {
+                x: 3,
+                y: 26,
+                targetX: 26,
+                targetY: 3
+            }
+
+        ];
+
+    }
+
+
+    /* ISLANDS */
+
+    if (map === "islands") {
+
+        for (
+            let x = 7;
+            x <= 11;
+            x++
+        ) {
+
+            for (
+                let y = 7;
+                y <= 11;
+                y++
+            ) {
+
+                walls.push({
+                    x: x,
+                    y: y
+                });
+
+            }
+
+        }
+
+
+        for (
+            let x = 18;
+            x <= 22;
+            x++
+        ) {
+
+            for (
+                let y = 18;
+                y <= 22;
+                y++
+            ) {
+
+                walls.push({
+                    x: x,
+                    y: y
+                });
+
+            }
+
+        }
+
+    }
+
+
+    /* ARENA */
+
+    if (map === "arena") {
+
+        for (
+            let x = 9;
+            x <= 20;
+            x++
+        ) {
+
+            walls.push({
+                x: x,
+                y: 9
+            });
+
+            walls.push({
+                x: x,
+                y: 20
+            });
+
+        }
+
+
+        for (
+            let y = 10;
+            y < 20;
+            y++
+        ) {
+
+            walls.push({
+                x: 9,
+                y: y
+            });
+
+            walls.push({
+                x: 20,
+                y: y
+            });
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startGame() {
+
+    clearInterval(timer);
+
+
+    initialize();
+
+
+    gameRunning = true;
+
+    paused = false;
+
+
+    overlay.style.display = "none";
+
+
+    pauseButton.textContent =
+        "Pause";
+
+
+    timer = setInterval(
+        update,
+        getSpeed()
+    );
+
+}
+
+
+/* =========================================================
+   SPEED
+========================================================= */
+
+function getSpeed() {
+
+    return Math.max(
+
+        45,
+
+        baseSpeed -
+        (level - 1) * 8
+
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update() {
+
+    if (
+        !gameRunning ||
+        paused
+    ) {
+
+        return;
+
+    }
+
+
+    direction =
+        nextDirection;
+
+
+    const head = {
+
+        x: snake[0].x,
+
+        y: snake[0].y
+
+    };
+
+
+    if (
+        direction === "up"
+    ) {
+
+        head.y--;
+
+    }
+
+
+    if (
+        direction === "down"
+    ) {
+
+        head.y++;
+
+    }
+
+
+    if (
+        direction === "left"
+    ) {
+
+        head.x--;
+
+    }
+
+
+    if (
+        direction === "right"
+    ) {
+
+        head.x++;
+
+    }
+
+
+    /* PORTAL */
+
+    for (
+        const portal of portals
+    ) {
+
+        if (
+
+            head.x === portal.x &&
+
+            head.y === portal.y
+
+        ) {
+
+            head.x =
+                portal.targetX;
+
+            head.y =
+                portal.targetY;
+
+            break;
+
+        }
+
+    }
+
+
+    /* WALL */
+
+    if (
+
+        head.x < 0 ||
+
+        head.x >= GRID ||
+
+        head.y < 0 ||
+
+        head.y >= GRID
+
+    ) {
+
+        gameOver(
+            "You hit the wall!"
+        );
+
+        return;
+
+    }
+
+
+    /* OBSTACLES */
+
+    for (
+        const wall of walls
+    ) {
+
+        if (
+
+            head.x === wall.x &&
+
+            head.y === wall.y
+
+        ) {
+
+            gameOver(
+                "You hit an obstacle!"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /* SELF COLLISION */
+
+    for (
+        let i = 0;
+        i < snake.length;
+        i++
+    ) {
+
+        if (
+
+            head.x === snake[i].x &&
+
+            head.y === snake[i].y
+
+        ) {
+
+            gameOver(
+                "You hit yourself!"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    snake.unshift(head);
+
+
+    let ate = false;
+
+
+    /* NORMAL FOOD */
+
+    if (
+
+        food &&
+
+        head.x === food.x &&
+
+        head.y === food.y
+
+    ) {
+
+        score += 1;
+
+        ate = true;
+
+        placeFood();
+
+        maybeBonus();
+
+    }
+
+
+    /* GOLDEN FOOD */
+
+    if (
+
+        bonus &&
+
+        head.x === bonus.x &&
+
+        head.y === bonus.y
+
+    ) {
+
+        score += 5;
+
+        ate = true;
+
+        bonus = null;
+
+    }
+
+
+    /* LIGHTNING */
+
+    if (
+
+        lightning &&
+
+        head.x === lightning.x &&
+
+        head.y === lightning.y
+
+    ) {
+
+        level++;
+
+        levelText.textContent =
+            level;
+
+        lightning = null;
+
+        restartTimer();
+
+    }
+
+
+    if (!ate) {
+
+        snake.pop();
+
+    }
+
+
+    /* LEVEL */
+
+    const newLevel =
+        Math.floor(score / 5) + 1;
+
+
+    if (
+        newLevel !== level
+    ) {
+
+        level = newLevel;
+
+        levelText.textContent =
+            level;
+
+        restartTimer();
+
+    }
+
+
+    /* WIN */
+
+    if (
+
+        mapSelect.value !== "classic" &&
+
+        score >= 30
+
+    ) {
+
+        winGame();
+
+        return;
+
+    }
+
+
+    updateScore();
+
+    draw();
+
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+function updateScore() {
+
+    scoreText.textContent =
+        score;
+
+
+    if (
+        score > best
+    ) {
+
+        best = score;
+
+        bestText.textContent =
+            best;
+
+
+        localStorage.setItem(
+            "snakeBest",
+            best
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FOOD
+========================================================= */
+
+function placeFood() {
+
+    let position;
+
+
+    do {
+
+        position = {
+
+            x:
+                Math.floor(
+                    Math.random() * GRID
+                ),
+
+            y:
+                Math.floor(
+                    Math.random() * GRID
+                )
+
+        };
+
+    } while (
+        occupied(position)
+    );
+
+
+    food = position;
+
+}
+
+
+/* =========================================================
+   BONUS
+========================================================= */
+
+function maybeBonus() {
+
+    const chance =
+        Math.random();
+
+
+    if (
+        chance < .18
+    ) {
+
+        let position;
+
+
+        do {
+
+            position = {
+
+                x:
+                    Math.floor(
+                        Math.random() * GRID
+                    ),
+
+                y:
+                    Math.floor(
+                        Math.random() * GRID
+                    )
+
+            };
+
+        } while (
+            occupied(position)
+        );
+
+
+        bonus = position;
+
+    }
+
+
+    if (
+        Math.random() < .08
+    ) {
+
+        let position;
+
+
+        do {
+
+            position = {
+
+                x:
+                    Math.floor(
+                        Math.random() * GRID
+                    ),
+
+                y:
+                    Math.floor(
+                        Math.random() * GRID
+                    )
+
+            };
+
+        } while (
+            occupied(position)
+        );
+
+
+        lightning = position;
+
+    }
+
+}
+
+
+/* =========================================================
+   OCCUPIED
+========================================================= */
+
+function occupied(position) {
+
+    for (
+        const part of snake
+    ) {
+
+        if (
+
+            part.x === position.x &&
+
+            part.y === position.y
+
+        ) {
+
+            return true;
+
+        }
+
+    }
+
+
+    for (
+        const wall of walls
+    ) {
+
+        if (
+
+            wall.x === position.x &&
+
+            wall.y === position.y
+
+        ) {
+
+            return true;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw() {
+
+    const theme =
+        themes[
+            themeSelect.value
+        ];
+
+
+    /* BACKGROUND */
+
+    ctx.fillStyle =
+        theme.background;
+
+
+    ctx.fillRect(
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        theme.grid;
+
+    ctx.lineWidth = 1;
+
+
+    for (
+
+        let x = 0;
+
+        x <= canvas.width;
+
+        x += SIZE
+
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+        ctx.lineTo(
+            x,
+            canvas.height
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    for (
+
+        let y = 0;
+
+        y <= canvas.height;
+
+        y += SIZE
+
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+        ctx.lineTo(
+            canvas.width,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* WALLS */
+
+    ctx.fillStyle =
+        theme.wall;
+
+
+    for (
+        const wall of walls
+    ) {
+
+        roundedRect(
+
+            wall.x * SIZE + 2,
+
+            wall.y * SIZE + 2,
+
+            SIZE - 4,
+
+            SIZE - 4,
+
+            5
+
+        );
+
+
+        ctx.fill();
+
+    }
+
+
+    /* PORTALS */
+
+    for (
+        const portal of portals
+    ) {
+
+        ctx.fillStyle =
+            "#8e44ad";
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+            portal.x * SIZE +
+            SIZE / 2,
+
+            portal.y * SIZE +
+            SIZE / 2,
+
+            SIZE * .36,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+
+        ctx.fill();
+
+
+        ctx.strokeStyle =
+            "#d7a7f2";
+
+        ctx.lineWidth = 3;
+
+
+        ctx.stroke();
+
+    }
+
+
+    /* NORMAL FOOD */
+
+    if (food) {
+
+        drawApple(
+
+            food.x,
+
+            food.y,
+
+            theme.food,
+
+            false
+
+        );
+
+    }
+
+
+    /* GOLDEN APPLE */
+
+    if (bonus) {
+
+        drawApple(
+
+            bonus.x,
+
+            bonus.y,
+
+            "#fbbc04",
+
+            true
+
+        );
+
+    }
+
+
+    /* LIGHTNING */
+
+    if (lightning) {
+
+        ctx.font =
+            "25px Arial";
+
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "middle";
+
+
+        ctx.fillText(
+
+            "⚡",
+
+            lightning.x * SIZE +
+            SIZE / 2,
+
+            lightning.y * SIZE +
+            SIZE / 2
+
+        );
+
+    }
+
+
+    /* SNAKE */
+
+    snake.forEach(
+
+        (part, index) => {
+
+            ctx.fillStyle =
+
+                index === 0
+
+                ? theme.snake
+
+                : theme.body;
+
+
+            roundedRect(
+
+                part.x * SIZE + 1,
+
+                part.y * SIZE + 1,
+
+                SIZE - 2,
+
+                SIZE - 2,
+
+                6
+
+            );
+
+
+            ctx.fill();
+
+        }
+
+    );
+
+
+    drawEyes();
+
+}
+
+
+/* =========================================================
+   APPLE
+========================================================= */
+
+function drawApple(
+    x,
+    y,
+    color,
+    golden
+) {
+
+    ctx.fillStyle =
+        color;
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+
+        x * SIZE +
+        SIZE / 2,
+
+        y * SIZE +
+        SIZE / 2 + 2,
+
+        SIZE * .31,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+
+    ctx.fill();
+
+
+    /* STEM */
+
+    ctx.strokeStyle =
+        "#5f6368";
+
+    ctx.lineWidth = 2;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        x * SIZE +
+        SIZE / 2,
+
+        y * SIZE + 6
+
+    );
+
+
+    ctx.lineTo(
+
+        x * SIZE +
+        SIZE / 2 + 3,
+
+        y * SIZE + 2
+
+    );
+
+
+    ctx.stroke();
+
+
+    if (golden) {
+
+        ctx.fillStyle =
+            "white";
+
+
+        ctx.font =
+            "11px Arial";
+
+
+        ctx.textAlign =
+            "center";
+
+
+        ctx.fillText(
+
+            "★",
+
+            x * SIZE +
+            SIZE / 2,
+
+            y * SIZE +
+            SIZE / 2 + 5
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EYES
+========================================================= */
+
+function drawEyes() {
+
+    if (
+        !snake.length
+    ) {
+
+        return;
+
+    }
+
+
+    const head =
+        snake[0];
+
+
+    ctx.fillStyle =
+        "white";
+
+
+    let eyes = [];
+
+
+    if (
+        direction === "right"
+    ) {
+
+        eyes = [
+
+            [14, 6],
+
+            [14, 14]
+
+        ];
+
+    }
+
+
+    if (
+        direction === "left"
+    ) {
+
+        eyes = [
+
+            [6, 6],
+
+            [6, 14]
+
+        ];
+
+    }
+
+
+    if (
+        direction === "up"
+    ) {
+
+        eyes = [
+
+            [6, 6],
+
+            [14, 6]
+
+        ];
+
+    }
+
+
+    if (
+        direction === "down"
+    ) {
+
+        eyes = [
+
+            [6, 14],
+
+            [14, 14]
+
+        ];
+
+    }
+
+
+    for (
+        const eye of eyes
+    ) {
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+            head.x * SIZE +
+            eye[0],
+
+            head.y * SIZE +
+            eye[1],
+
+            2.3,
+
+            0,
+
+            Math.PI * 2
+
+        );
+
+
+        ctx.fill();
+
+    }
+
+}
+
+
+/* =========================================================
+   ROUND RECT
+========================================================= */
+
+function roundedRect(
+
+    x,
+
+    y,
+
+    width,
+
+    height,
+
+    radius
+
+) {
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+
+        x + radius,
+
+        y
+
+    );
+
+
+    ctx.lineTo(
+
+        x + width - radius,
+
+        y
+
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x + width,
+
+        y,
+
+        x + width,
+
+        y + radius
+
+    );
+
+
+    ctx.lineTo(
+
+        x + width,
+
+        y + height - radius
+
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x + width,
+
+        y + height,
+
+        x + width - radius,
+
+        y + height
+
+    );
+
+
+    ctx.lineTo(
+
+        x + radius,
+
+        y + height
+
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x,
+
+        y + height,
+
+        x,
+
+        y + height - radius
+
+    );
+
+
+    ctx.lineTo(
+
+        x,
+
+        y + radius
+
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        x,
+
+        y,
+
+        x + radius,
+
+        y
+
+    );
+
+
+    ctx.closePath();
+
+}
+
+
+/* =========================================================
+   DIRECTION
+========================================================= */
+
+function setDirection(
+    newDirection
+) {
+
+    if (
+        !gameRunning ||
+        paused
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+
+        newDirection === "up" &&
+
+        direction !== "down"
+
+    ) {
+
+        nextDirection =
+            "up";
+
+    }
+
+
+    if (
+
+        newDirection === "down" &&
+
+        direction !== "up"
+
+    ) {
+
+        nextDirection =
+            "down";
+
+    }
+
+
+    if (
+
+        newDirection === "left" &&
+
+        direction !== "right"
+
+    ) {
+
+        nextDirection =
+            "left";
+
+    }
+
+
+    if (
+
+        newDirection === "right" &&
+
+        direction !== "left"
+
+    ) {
+
+        nextDirection =
+            "right";
+
+    }
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        const key =
+            event.key.toLowerCase();
+
+
+        if (
+
+            key === "arrowup" ||
+
+            key === "w"
+
+        ) {
+
+            event.preventDefault();
+
+            setDirection("up");
+
+        }
+
+
+        if (
+
+            key === "arrowdown" ||
+
+            key === "s"
+
+        ) {
+
+            event.preventDefault();
+
+            setDirection("down");
+
+        }
+
+
+        if (
+
+            key === "arrowleft" ||
+
+            key === "a"
+
+        ) {
+
+            event.preventDefault();
+
+            setDirection("left");
+
+        }
+
+
+        if (
+
+            key === "arrowright" ||
+
+            key === "d"
+
+        ) {
+
+            event.preventDefault();
+
+            setDirection("right");
+
+        }
+
+
+        if (
+            key === " "
+        ) {
+
+            event.preventDefault();
+
+            togglePause();
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function togglePause() {
+
+    if (
+        !gameRunning
+    ) {
+
+        return;
+
+    }
+
+
+    paused =
+        !paused;
+
+
+    pauseButton.textContent =
+
+        paused
+
+        ? "Resume"
+
+        : "Pause";
+
+}
+
+
+/* =========================================================
+   RESTART TIMER
+========================================================= */
+
+function restartTimer() {
+
+    clearInterval(timer);
+
+
+    timer = setInterval(
+
+        update,
+
+        getSpeed()
+
+    );
+
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+function gameOver(reason) {
+
+    gameRunning =
+        false;
+
+
+    clearInterval(timer);
+
+
+    overlayTitle.textContent =
+        "Game Over!";
+
+
+    overlayText.textContent =
+
+        reason +
+        " Score: " +
+        score;
+
+
+    overlay.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   WIN
+========================================================= */
+
+function winGame() {
+
+    gameRunning =
+        false;
+
+
+    clearInterval(timer);
+
+
+    overlayTitle.textContent =
+        "You Win! 🎉";
+
+
+    overlayText.textContent =
+
+        "You completed the map with " +
+
+        score +
+
+        " points!";
+
+
+    overlay.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+startButton.addEventListener(
+
+    "click",
+
+    startGame
+
+);
+
+
+restartButton.addEventListener(
+
+    "click",
+
+    startGame
+
+);
+
+
+pauseButton.addEventListener(
+
+    "click",
+
+    togglePause
+
+);
+
+
+/* =========================================================
+   MAP CHANGES
+========================================================= */
+
+mapSelect.addEventListener(
+
+    "change",
+
+    function() {
+
+        if (gameRunning) {
+
+            startGame();
+
+        } else {
+
+            initialize();
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
+   THEME CHANGES
+========================================================= */
+
+themeSelect.addEventListener(
+
+    "change",
+
+    function() {
+
+        draw();
+
+    }
+
+);
+
+
+/* =========================================================
+   START SCREEN
+========================================================= */
+
+initialize();
+
+
+overlayTitle.textContent =
+    "Snake";
+
+
+overlayText.textContent =
+    "Press Start to play";
+
+
+overlay.style.display =
+    "flex";
+
+</script>
+
+</body>
+</html>
+

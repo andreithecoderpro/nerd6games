@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>π Clicker</title>
+
+    <style>
+        * {
+            box-sizing: border-box;         
+            
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+            padding: 40px 5vw;
+
+            background:
+                radial-gradient(circle at top, #182848, #0b1020 70%);
+
+            color: white;
+            font-family: Arial, sans-serif;
+
+            overflow-x: hidden;
+        }
+
+        #gameArea {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #shop {
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 800px) {
+            body {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 20px;
+            }
+            #gameArea { min-height: auto; }
+        }
+
+        /* TITLE */
+
+        h1 {
+            
+
+            margin-top: 30px;
+            margin-bottom: 5px;
+
+            font-size: 50px;
+
+            color: #66eaff;
+
+            text-shadow:
+                0 0 10px #00d9ff,
+                0 0 30px #0077ff;
+        }
+
+        #subtitle {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        /* SCORE */
+
+        #score {
+            font-size: 55px;
+            margin: 10px;
+
+            transition:
+                transform 0.15s ease,
+                color 0.15s ease;
+        }
+
+        #score.pop {
+            transform: scale(1.15);
+            color: #66eaff;
+        }
+
+        #perClick {
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        /* PIE */
+
+        #pie {
+            width: 300px;
+            height: 300px;
+
+            border-radius: 50%;
+
+            border: 5px solid #8c52ff;
+
+            background:
+                conic-gradient(
+                    #ffcc66 0deg 360deg
+                );
+
+            cursor: pointer;
+
+            position: relative;
+
+            box-shadow:
+                0 0 20px #8c52ff,
+                0 0 50px rgba(140, 82, 255, 0.5);
+
+            transition:
+                box-shadow 0.25s ease,
+                filter 0.25s ease;
+        }
+
+        #pie:hover {
+            filter: brightness(1.15);
+
+            box-shadow:
+                0 0 30px #8c52ff,
+                0 0 70px rgba(140, 82, 255, 0.8);
+        }
+
+        #pie:active {
+            transform: scale(0.92);
+        }
+
+        /* PIE CRUST */
+
+        #pie::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 7px;
+
+            border-radius: 50%;
+
+            /* Golden-brown baked crust */
+            background:
+                radial-gradient(circle at 35% 30%,
+                    rgba(255,220,130,0.8) 0 8%,
+                    transparent 9%),
+                radial-gradient(circle at 70% 65%,
+                    rgba(120,55,15,0.28) 0 3%,
+                    transparent 4%),
+                radial-gradient(circle at 25% 70%,
+                    rgba(120,55,15,0.22) 0 3%,
+                    transparent 4%),
+                linear-gradient(145deg, #f6c15d, #c87525 72%, #9a4d16);
+
+            border: 7px solid #8f4715;
+
+            box-shadow:
+                inset 0 4px 7px rgba(255,255,255,0.35),
+                inset 0 -7px 10px rgba(80,30,5,0.3);
+
+            pointer-events: none;
+        }
+
+        /* PIE FILL + CRUST EDGE */
+
+        #pie::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 18px;
+
+            border-radius: 50%;
+
+            /* Realistic pie filling */
+            background:
+                radial-gradient(circle at 30% 25%,
+                    rgba(255,240,190,0.55) 0 2px,
+                    transparent 3px),
+                radial-gradient(circle at 65% 35%,
+                    rgba(255,235,175,0.5) 0 2px,
+                    transparent 3px),
+                radial-gradient(circle at 45% 70%,
+                    rgba(150,65,20,0.35) 0 3px,
+                    transparent 4px),
+                linear-gradient(145deg, #e99a35, #c86420 65%, #a94817);
+
+            border: 4px solid #f2b34b;
+
+            box-shadow:
+                inset 0 5px 8px rgba(255,255,255,0.25),
+                inset 0 -6px 10px rgba(80,25,5,0.25);
+
+            pointer-events: none;
+        }
+
+        /* PIE TOP CRUST LATTICE */
+
+        #pie .pieLattice {
+            position: absolute;
+            inset: 25px;
+
+            border-radius: 50%;
+
+            background:
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0 13px,
+                    rgba(255,211,116,0.9) 14px 19px,
+                    transparent 20px 28px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0 13px,
+                    rgba(255,211,116,0.9) 14px 19px,
+                    transparent 20px 28px
+                );
+
+            box-shadow:
+                0 2px 4px rgba(90,35,5,0.25);
+
+            pointer-events: none;
+        }
+
+        /* LITTLE PIE VENT HOLES */
+
+        #pie .pieHole {
+            position: absolute;
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #8f4015;
+
+            box-shadow:
+                inset 0 2px 2px rgba(50,15,0,0.4),
+                0 1px 1px rgba(255,220,150,0.5);
+
+            pointer-events: none;
+        }
+
+        #pie .hole1 { left: 42%; top: 35%; }
+        #pie .hole2 { left: 58%; top: 43%; }
+        #pie .hole3 { left: 47%; top: 58%; }
+        #pie .hole4 { left: 67%; top: 57%; }
+
+        /* CLICK TEXT */
+
+        .clickText {
+            position: absolute;
+
+            color: #66eaff;
+
+            font-size: 24px;
+            font-weight: bold;
+
+            pointer-events: none;
+
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.3);
+            }
+        }
+
+        /* SHOP */
+
+        #shop {
+            width: min(500px, 90%);
+
+            margin-top: 40px;
+            margin-bottom: 40px;
+
+            padding: 20px;
+
+            border-radius: 20px;
+
+            background: rgba(255,255,255,0.07);
+
+            border: 1px solid rgba(255,255,255,0.15);
+
+            backdrop-filter: blur(10px);
+        }
+
+        #shop h2 {
+            text-align: center;
+
+            color: #ffcc66;
+
+            margin-top: 0;
+        }
+        #autoIncome {
+            text-align: center;
+            color: #8fffa8;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .upgrade button.autoButton {
+            background: #35a85b;
+        }
+
+        .upgrade button.autoButton:hover {
+            background: #4bcf72;
+        }
+
+
+        .shopTabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0 20px;
+        }
+
+        .shopTab {
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .shopTab:hover {
+            background: rgba(255,255,255,0.16);
+        }
+
+        .shopTab.active {
+            background: #8c52ff;
+            box-shadow: 0 0 15px rgba(140,82,255,0.5);
+        }
+
+        .shopSection {
+            display: none;
+        }
+
+        .shopSection.active {
+            display: block;
+        }
+
+        .upgrade {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 15px;
+
+            margin-top: 12px;
+
+            border-radius: 12px;
+
+            background: rgba(0,0,0,0.25);
+        }
+
+        .upgradeInfo {
+            flex: 1;
+        }
+
+        .upgradeName {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .upgradeDescription {
+            color: #999;
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+        .upgrade button {
+            border: none;
+
+            padding: 10px 15px;
+
+            border-radius: 10px;
+
+            background: #8c52ff;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
+        }
+
+        .upgrade button:hover {
+            background: #a875ff;
+            transform: scale(1.05);
+        }
+
+        .upgrade button:active {
+            transform: scale(0.95);
+        }
+
+        .upgrade button:disabled {
+            background: #444;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="gameArea">
+
+    <h1>π Clicker</h1>
+
+    <div id="subtitle">
+        Bake π. Become infinite.
+    </div>
+
+    <div id="score">0</div>
+
+    <div id="perClick">
+        +1 π per click
+    </div>
+
+    <button id="pie">
+            <span class="pieLattice"></span>
+            <span class="pieHole hole1"></span>
+            <span class="pieHole hole2"></span>
+            <span class="pieHole hole3"></span>
+            <span class="pieHole hole4"></span>
+        </button>
+
+    </div>
+
+    <div id="shop">
+
+        <h2>🥧 π Bakery</h2>
+        <div id="autoIncome">💰 Auto income: 0 π/sec</div>
+
+
+        <div class="shopTabs">
+            <button class="shopTab active" id="clickTab">🖱️ Click Upgrades</button>
+            <button class="shopTab" id="autoTab">⚙️ Auto Upgrades</button>
+        </div>
+
+        <div id="clickUpgrades" class="shopSection active">
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    🥄 Better Spoon
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +1 π per click.
+                </div>
+            </div>
+
+            <button id="spoonButton">
+                Buy — 10 π
+            </button>
+
+        </div>
+
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    🔥 Super Oven
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +5 π per click.
+                </div>
+            </div>
+
+            <button id="ovenButton">
+                Buy — 100 π
+            </button>
+
+        </div>
+
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    🧑‍🍳 π Chef
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +25 π per click.
+                </div>
+            </div>
+
+            <button id="chefButton">
+                Buy — 500 π
+            </button>
+
+        </div>
+
+        </div>
+
+        <div id="autoUpgrades" class="shopSection">
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    🫐 Blueberries
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +1 π per second automatically.
+                </div>
+            </div>
+
+            <button id="blueberryButton" class="autoButton">
+                Buy — 250 π
+            </button>
+
+        </div>
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    🍓 Starberries
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +5 π per second automatically.
+                </div>
+            </div>
+
+            <button id="starberryButton" class="autoButton">
+                Buy — 1000 π
+            </button>
+
+        </div>
+
+        <div class="upgrade">
+
+            <div class="upgradeInfo">
+                <div class="upgradeName">
+                    👷 Pie Shop Workers
+                </div>
+
+                <div class="upgradeDescription">
+                    Adds +10 π per second automatically.
+                </div>
+            </div>
+
+            <button id="workerButton" class="autoButton">
+                Buy — 2500 π
+            </button>
+
+        </div>
+
+        <div class="upgrade">
+            <div class="upgradeInfo">
+                <div class="upgradeName">🏭 Pie Factory</div>
+                <div class="upgradeDescription">Adds +25 π per second automatically.</div>
+            </div>
+            <button id="factoryButton" class="autoButton">Buy — 7500 π</button>
+        </div>
+
+        <div class="upgrade">
+            <div class="upgradeInfo">
+                <div class="upgradeName">🚚 Pie Delivery Fleet</div>
+                <div class="upgradeDescription">Adds +100 π per second automatically.</div>
+            </div>
+            <button id="fleetButton" class="autoButton">Buy — 25000 π</button>
+        </div>
+
+        <div class="upgrade">
+            <div class="upgradeInfo">
+                <div class="upgradeName">🏢 Pie Corporation</div>
+                <div class="upgradeDescription">Adds +500 π per second automatically.</div>
+            </div>
+            <button id="corporationButton" class="autoButton">Buy — 100000 π</button>
+        </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        let score = 0;
+        let perClick = 1;
+
+        let spoonCost = 10;
+        let ovenCost = 100;
+        let chefCost = 500;
+
+        let blueberryCost = 250;
+        let starberryCost = 1000;
+        let workerCost = 2500;
+        let factoryCost = 7500;
+        let fleetCost = 25000;
+        let corporationCost = 100000;
+
+        let autoIncome = 0;
+
+
+
+        const scoreDisplay =
+            document.getElementById("score");
+
+        const perClickDisplay =
+            document.getElementById("perClick");
+
+        const pie =
+            document.getElementById("pie");
+
+        const autoIncomeDisplay =
+            document.getElementById("autoIncome");
+
+
+
+        function updateDisplay() {
+
+            scoreDisplay.textContent =
+                Math.floor(score);
+
+            perClickDisplay.textContent =
+                "+" + perClick + " π per click";
+
+            autoIncomeDisplay.textContent =
+                "💰 Auto income: " + autoIncome + " π/sec";
+
+            updateShop();
+
+        }
+
+
+        function updateShop() {
+
+            document.getElementById("spoonButton").textContent =
+                "Buy — " + spoonCost + " π";
+
+            document.getElementById("ovenButton").textContent =
+                "Buy — " + ovenCost + " π";
+
+            document.getElementById("chefButton").textContent =
+                "Buy — " + chefCost + " π";
+
+            document.getElementById("blueberryButton").textContent =
+                "Buy — " + blueberryCost + " π";
+
+            document.getElementById("starberryButton").textContent =
+                "Buy — " + starberryCost + " π";
+
+            document.getElementById("workerButton").textContent =
+                "Buy — " + workerCost + " π";
+
+            document.getElementById("factoryButton").textContent =
+                "Buy — " + factoryCost + " π";
+
+            document.getElementById("fleetButton").textContent =
+                "Buy — " + fleetCost + " π";
+
+            document.getElementById("corporationButton").textContent =
+                "Buy — " + corporationCost + " π";
+
+
+            document.getElementById("spoonButton").disabled =
+                score < spoonCost;
+
+            document.getElementById("ovenButton").disabled =
+                score < ovenCost;
+
+            document.getElementById("chefButton").disabled =
+                score < chefCost;
+
+            document.getElementById("blueberryButton").disabled =
+                score < blueberryCost;
+
+            document.getElementById("starberryButton").disabled =
+                score < starberryCost;
+
+            document.getElementById("workerButton").disabled =
+                score < workerCost;
+
+            document.getElementById("factoryButton").disabled =
+                score < factoryCost;
+
+            document.getElementById("fleetButton").disabled =
+                score < fleetCost;
+
+            document.getElementById("corporationButton").disabled =
+                score < corporationCost;
+        }
+
+
+        function popScore() {
+
+            scoreDisplay.classList.remove("pop");
+
+            void scoreDisplay.offsetWidth;
+
+            scoreDisplay.classList.add("pop");
+
+        }
+
+
+        function createClickText() {
+
+            const text =
+                document.createElement("div");
+
+            text.className = "clickText";
+
+            text.textContent =
+                "+" + perClick + " π";
+
+            text.style.left =
+                (Math.random() * 80 + 10) + "%";
+
+            text.style.top =
+                (Math.random() * 40 + 30) + "%";
+
+            document.body.appendChild(text);
+
+            setTimeout(() => {
+                text.remove();
+            }, 800);
+        }
+
+
+        pie.addEventListener("click", function () {
+
+            score += perClick;
+
+            popScore();
+
+            createClickText();
+
+            updateDisplay();
+
+        });
+
+
+        document
+            .getElementById("spoonButton")
+            .addEventListener("click", function () {
+
+                if (score >= spoonCost) {
+
+                    score -= spoonCost;
+
+                    perClick += 1;
+
+                    spoonCost =
+                        Math.floor(spoonCost * 1.5);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+        document
+            .getElementById("ovenButton")
+            .addEventListener("click", function () {
+
+                if (score >= ovenCost) {
+
+                    score -= ovenCost;
+
+                    perClick += 5;
+
+                    ovenCost =
+                        Math.floor(ovenCost * 1.6);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+        document
+            .getElementById("chefButton")
+            .addEventListener("click", function () {
+
+                if (score >= chefCost) {
+
+                    score -= chefCost;
+
+                    perClick += 25;
+
+                    chefCost =
+                        Math.floor(chefCost * 1.7);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+
+        document
+            .getElementById("blueberryButton")
+            .addEventListener("click", function () {
+
+                if (score >= blueberryCost) {
+
+                    score -= blueberryCost;
+
+                    autoIncome += 1;
+
+                    blueberryCost =
+                        Math.floor(blueberryCost * 1.5);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+        document
+            .getElementById("starberryButton")
+            .addEventListener("click", function () {
+
+                if (score >= starberryCost) {
+
+                    score -= starberryCost;
+
+                    autoIncome += 5;
+
+                    starberryCost =
+                        Math.floor(starberryCost * 1.6);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+        document
+            .getElementById("workerButton")
+            .addEventListener("click", function () {
+
+                if (score >= workerCost) {
+
+                    score -= workerCost;
+
+                    autoIncome += 10;
+
+                    workerCost =
+                        Math.floor(workerCost * 1.7);
+
+                    updateDisplay();
+                }
+
+            });
+
+
+        // Give the bakery its automatic income every second.
+        document
+            .getElementById("factoryButton")
+            .addEventListener("click", function () {
+                if (score >= factoryCost) {
+                    score -= factoryCost;
+                    autoIncome += 25;
+                    factoryCost = Math.floor(factoryCost * 1.7);
+                    updateDisplay();
+                }
+            });
+
+        document
+            .getElementById("fleetButton")
+            .addEventListener("click", function () {
+                if (score >= fleetCost) {
+                    score -= fleetCost;
+                    autoIncome += 100;
+                    fleetCost = Math.floor(fleetCost * 1.8);
+                    updateDisplay();
+                }
+            });
+
+        document
+            .getElementById("corporationButton")
+            .addEventListener("click", function () {
+                if (score >= corporationCost) {
+                    score -= corporationCost;
+                    autoIncome += 500;
+                    corporationCost = Math.floor(corporationCost * 2);
+                    updateDisplay();
+                }
+            });
+
+        document.getElementById("clickTab").addEventListener("click", function () {
+            document.getElementById("clickUpgrades").classList.add("active");
+            document.getElementById("autoUpgrades").classList.remove("active");
+            this.classList.add("active");
+            document.getElementById("autoTab").classList.remove("active");
+        });
+
+        document.getElementById("autoTab").addEventListener("click", function () {
+            document.getElementById("autoUpgrades").classList.add("active");
+            document.getElementById("clickUpgrades").classList.remove("active");
+            this.classList.add("active");
+            document.getElementById("clickTab").classList.remove("active");
+        });
+
+        setInterval(function () {
+
+            if (autoIncome > 0) {
+
+                score += autoIncome;
+
+                popScore();
+
+                updateDisplay();
+            }
+
+        }, 1000);
+
+        updateDisplay();
+
+    </script>
+
+</body>
+</html>

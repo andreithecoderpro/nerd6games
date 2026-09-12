@@ -1,0 +1,1971 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>N6G Access</title> <style>
+/* =========================================================
+GENERAL
+========================================================= */
+
+
+html,
+body {
+width: 100%;
+min-height: 100%;
+}
+
+body {
+font-family: Arial, sans-serif;
+color: white;
+overflow: hidden;
+}
+
+/* =========================================================
+LOGIN SCREEN
+========================================================= */
+
+#loginScreen {
+width: 100%;
+min-height: 100vh;
+
+position: relative;
+
+overflow: hidden;
+
+background:
+    radial-gradient(
+        circle at 25% 45%,
+        #202b52 0%,
+        transparent 28%
+    ),
+    linear-gradient(
+        135deg,
+        #080b18,
+        #11162b 55%,
+        #070912
+    );
+
+}
+
+.stars {
+position: absolute;
+
+width: 100%;
+height: 100%;
+
+left: 0;
+top: 0;
+
+pointer-events: none;
+
+background-image:
+    radial-gradient(
+        circle,
+        rgba(255,255,255,.7) 1px,
+        transparent 1px
+    );
+
+background-size: 90px 90px;
+
+opacity: .25;
+
+}
+
+/* =========================================================
+LOGIN CONTAINER
+========================================================= */
+
+.login-container {
+width: 1000px;
+max-width: 94vw;
+height: 620px;
+
+position: absolute;
+
+left: 50%;
+top: 50%;
+
+transform:
+    translate(-50%, -50%);
+
+}
+
+/* =========================================================
+LAMP AREA
+========================================================= */
+
+.lamp-area {
+width: 430px;
+height: 520px;
+
+position: absolute;
+
+left: 0;
+top: 50px;
+
+}
+
+.lamp {
+width: 330px;
+height: 440px;
+
+position: absolute;
+
+left: 50px;
+top: 20px;
+
+transform-origin: 50% 80%;
+
+transition:
+    transform .5s ease;
+
+}
+
+/* =========================================================
+LIGHT
+========================================================= */
+
+.light {
+position: absolute;
+
+width: 360px;
+height: 350px;
+
+left: -15px;
+top: 145px;
+
+background:
+    linear-gradient(
+        to bottom,
+        rgba(255,218,120,.38),
+        rgba(255,218,120,.08),
+        transparent
+    );
+
+clip-path:
+    polygon(
+        42% 0,
+        58% 0,
+        100% 100%,
+        0 100%
+    );
+
+filter: blur(8px);
+
+opacity: .75;
+
+transition:
+    opacity .4s;
+
+}
+
+.lamp.off .light {
+opacity: 0;
+}
+
+/* =========================================================
+LAMP SHADE
+========================================================= */
+
+.shade {
+width: 260px;
+height: 150px;
+
+position: absolute;
+
+left: 35px;
+top: 65px;
+
+background:
+    linear-gradient(
+        135deg,
+        #f4f0df,
+        #d7d0b8 60%,
+        #aaa38e
+    );
+
+clip-path:
+    polygon(
+        20% 0,
+        80% 0,
+        100% 100%,
+        0 100%
+    );
+
+border-radius: 10px;
+
+box-shadow:
+    inset 0 -12px 20px
+    rgba(0,0,0,.18),
+
+    0 10px 35px
+    rgba(255,220,120,.25);
+
+z-index: 5;
+
+}
+
+.shade::after {
+content: "";
+
+position: absolute;
+
+width: 100%;
+height: 15px;
+
+left: 0;
+bottom: 0;
+
+background: #8e8876;
+
+border-radius: 50%;
+
+}
+
+/* =========================================================
+BULB
+========================================================= */
+
+.bulb {
+width: 55px;
+height: 55px;
+
+position: absolute;
+
+left: 137px;
+top: 115px;
+
+border-radius: 50%;
+
+background:
+    radial-gradient(
+        circle,
+        #fff9cf,
+        #ffe48a 35%,
+        #ffbf32 65%,
+        #ff9c00
+    );
+
+box-shadow:
+    0 0 15px #ffe79a,
+    0 0 40px #ffd45c,
+    0 0 80px
+    rgba(255,190,50,.8);
+
+z-index: 4;
+
+transition: .4s;
+
+}
+
+.lamp.off .bulb {
+background: #554f43;
+
+box-shadow: none;
+
+}
+
+/* =========================================================
+LAMP EYES
+========================================================= */
+
+.eye {
+position: absolute;
+
+width: 23px;
+height: 31px;
+
+top: 92px;
+
+background: #151515;
+
+border-radius: 50%;
+
+z-index: 8;
+
+}
+
+.eye.left {
+left: 100px;
+}
+
+.eye.right {
+right: 100px;
+}
+
+.eye::after {
+content: "";
+
+position: absolute;
+
+width: 7px;
+height: 10px;
+
+left: 5px;
+top: 5px;
+
+background: white;
+
+border-radius: 50%;
+
+}
+
+/* =========================================================
+LAMP MOUTH
+========================================================= */
+
+.mouth {
+position: absolute;
+
+width: 35px;
+height: 17px;
+
+left: 112px;
+top: 128px;
+
+border-bottom:
+    4px solid #222;
+
+border-radius:
+    0 0 40px 40px;
+
+z-index: 8;
+
+}
+
+/* =========================================================
+LAMP ARM
+========================================================= */
+
+.arm {
+position: absolute;
+
+width: 24px;
+height: 170px;
+
+left: 153px;
+top: 205px;
+
+background:
+    linear-gradient(
+        to right,
+        #50566a,
+        #8a91a6,
+        #3e4353
+    );
+
+border-radius: 15px;
+
+transform:
+    rotate(-8deg);
+
+transform-origin:
+    top center;
+
+z-index: 2;
+
+}
+
+.arm::before {
+content: "";
+
+position: absolute;
+
+width: 35px;
+height: 35px;
+
+left: -5px;
+top: -15px;
+
+background: #5e6476;
+
+border-radius: 50%;
+
+}
+
+.arm::after {
+content: "";
+
+position: absolute;
+
+width: 32px;
+height: 32px;
+
+left: -4px;
+bottom: -10px;
+
+background: #5e6476;
+
+border-radius: 50%;
+
+}
+
+/* =========================================================
+LAMP BASE
+========================================================= */
+
+.base {
+position: absolute;
+
+width: 190px;
+height: 50px;
+
+left: 70px;
+bottom: 15px;
+
+background:
+    linear-gradient(
+        to bottom,
+        #646a7c,
+        #303442
+    );
+
+border-radius: 50%;
+
+box-shadow:
+    0 15px 30px
+    rgba(0,0,0,.5);
+
+z-index: 3;
+
+}
+
+.base::before {
+content: "";
+
+position: absolute;
+
+width: 100px;
+height: 45px;
+
+left: 45px;
+top: -25px;
+
+background: #505667;
+
+border-radius: 50%;
+
+}
+
+/* =========================================================
+LAMP SWITCH
+========================================================= */
+
+.switch {
+position: absolute;
+
+width: 52px;
+height: 27px;
+
+right: 30px;
+bottom: 85px;
+
+border: none;
+
+border-radius: 20px;
+
+background: #393e50;
+
+cursor: pointer;
+
+z-index: 10;
+
+}
+
+.switch::after {
+content: "";
+
+position: absolute;
+
+width: 21px;
+height: 21px;
+
+left: 3px;
+top: 3px;
+
+background: #777d8d;
+
+border-radius: 50%;
+
+transition: .3s;
+
+}
+
+.lamp:not(.off) .switch {
+background: #e4a832;
+}
+
+.lamp:not(.off) .switch::after {
+left: 28px;
+
+background: white;
+
+}
+
+/* =========================================================
+LAMP ANIMATIONS
+========================================================= */
+
+.lamp.focus-code {
+transform:
+rotate(5deg)
+translateY(-5px);
+}
+
+.lamp.happy {
+animation:
+happyLamp .7s ease;
+}
+
+@keyframes happyLamp {
+
+0%,
+100% {
+    transform: rotate(0);
+}
+
+25% {
+    transform: rotate(-7deg);
+}
+
+75% {
+    transform: rotate(7deg);
+}
+
+}
+
+/* =========================================================
+LOGIN CARD
+========================================================= */
+
+.login-card {
+width: 390px;
+
+position: absolute;
+
+right: 0;
+top: 100px;
+
+padding: 42px;
+
+border-radius: 28px;
+
+background:
+    rgba(19,24,45,.82);
+
+border:
+    1px solid
+    rgba(255,255,255,.12);
+
+backdrop-filter: blur(18px);
+
+box-shadow:
+    0 25px 80px
+    rgba(0,0,0,.5),
+
+    inset 0 1px
+    rgba(255,255,255,.08);
+
+}
+
+.login-card h1 {
+font-size: 38px;
+
+margin-bottom: 8px;
+
+}
+
+.subtitle {
+color: #9fa6bd;
+
+margin-bottom: 30px;
+
+font-size: 15px;
+
+}
+
+/* =========================================================
+INPUT
+========================================================= */
+
+.input-group {
+margin-bottom: 20px;
+}
+
+.input-group label {
+display: block;
+
+margin-bottom: 8px;
+
+font-size: 13px;
+
+color: #c7cbda;
+
+}
+
+.input-box {
+position: relative;
+}
+
+.input-box input {
+width: 100%;
+height: 55px;
+
+padding:
+    0 48px
+    0 17px;
+
+border:
+    1px solid #343a53;
+
+border-radius: 14px;
+
+outline: none;
+
+background: #11162a;
+
+color: white;
+
+font-size: 15px;
+
+transition: .3s;
+
+}
+
+.input-box input:focus {
+border-color: #e8b64d;
+
+box-shadow:
+    0 0 0 3px
+    rgba(232,182,77,.12);
+
+}
+
+.code-icon {
+position: absolute;
+
+right: 17px;
+top: 17px;
+
+}
+
+/* =========================================================
+LOGIN BUTTON
+========================================================= */
+
+.login-btn {
+width: 100%;
+height: 55px;
+
+border: none;
+
+border-radius: 14px;
+
+background:
+    linear-gradient(
+        135deg,
+        #ffd66b,
+        #e6a62e
+    );
+
+color: #18130a;
+
+font-size: 16px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+box-shadow:
+    0 10px 30px
+    rgba(230,166,46,.2);
+
+transition: .25s;
+
+}
+
+.login-btn:hover {
+transform:
+translateY(-2px);
+
+box-shadow:
+    0 15px 35px
+    rgba(230,166,46,.3);
+
+}
+
+.login-btn:active {
+transform:
+translateY(1px);
+}
+
+/* =========================================================
+MESSAGE
+========================================================= */
+
+.message {
+min-height: 22px;
+
+text-align: center;
+
+margin-top: 18px;
+
+font-size: 14px;
+
+}
+
+.message.success {
+color: #7ee2a8;
+}
+
+.message.error {
+color: #ff8585;
+}
+
+/* =========================================================
+N6G HUB
+========================================================= */
+
+#hub {
+display: none;
+
+width: 100%;
+min-height: 100vh;
+
+overflow-y: auto;
+
+text-align: center;
+
+background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e3a8a,
+        #312e81
+    );
+
+color: white;
+
+}
+
+.hub-container {
+width: 100%;
+max-width: 1000px;
+
+margin:
+    0 auto;
+
+padding:
+    50px 20px;
+
+}
+
+.hub-title {
+font-size: 70px;
+
+margin:
+    20px 0 10px;
+
+letter-spacing: 8px;
+
+text-shadow:
+    0 0 20px #60a5fa;
+
+}
+
+.hub-subtitle {
+font-size: 20px;
+
+color: #bfdbfe;
+
+margin-bottom: 40px;
+
+}
+
+/* =========================================================
+HUB BUTTONS
+========================================================= */
+
+.buttons {
+text-align: center;
+
+margin-bottom: 50px;
+
+}
+
+.hub-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+
+margin: 10px;
+
+border: none;
+border-radius: 15px;
+padding: 15px 30px;
+
+background:
+    linear-gradient(
+        135deg,
+        #38bdf8,
+        #2563eb
+    );
+
+box-shadow:
+    0 8px 20px
+    rgba(0,0,0,.3);
+
+transition: .25s;
+cursor: pointer;
+
+/* Make links and buttons look identical */
+color: white;
+text-decoration: none;
+font-family: inherit;
+font-size: 20px;
+font-weight: bold;
+line-height: 1.2;
+appearance: none;
+-webkit-appearance: none;
+box-sizing: border-box;
+}
+
+.hub-button:hover {
+transform:
+translateY(-5px)
+scale(1.05);
+
+box-shadow:
+    0 12px 30px
+    rgba(96,165,250,.5);
+
+}
+
+
+/* =========================================================
+GALLERY
+========================================================= */
+
+.gallery {
+text-align: center;
+}
+
+.gallery img {
+display: inline-block;
+
+width: 350px;
+max-width: 90%;
+
+height: 250px;
+
+margin: 10px;
+
+object-fit: cover;
+
+border-radius: 20px;
+
+border:
+    3px solid
+    rgba(255,255,255,.3);
+
+box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.4);
+
+transition: .3s;
+
+}
+
+.gallery img:hover {
+transform:
+scale(1.04);
+
+border-color:
+    #60a5fa;
+
+box-shadow:
+    0 0 30px
+    rgba(96,165,250,.5);
+
+}
+
+footer {
+margin-top: 50px;
+
+color: #93c5fd;
+
+}
+
+/* =========================================================
+INFO PAGE
+========================================================= */
+
+#infoPage {
+display: none;
+
+position: fixed;
+
+inset: 0;
+
+overflow-y: auto;
+
+text-align: center;
+
+background:
+    linear-gradient(
+        135deg,
+        #080b18,
+        #11162b 55%,
+        #070912
+    );
+
+color: white;
+
+z-index: 100;
+
+}
+
+.info-container {
+width: 100%;
+max-width: 850px;
+
+margin: 0 auto;
+
+padding:
+    35px 20px 60px;
+
+}
+
+.info-container h1 {
+font-size: 60px;
+
+margin:
+    20px 0 10px;
+
+letter-spacing: 5px;
+
+color: #ffd66b;
+
+text-shadow:
+    0 0 20px
+    rgba(255,214,107,.5);
+
+}
+
+.info-intro {
+max-width: 650px;
+
+margin:
+    0 auto 35px;
+
+color: #b9c0d5;
+
+font-size: 18px;
+
+line-height: 1.6;
+
+}
+
+.info-card {
+margin: 20px 0;
+
+padding: 25px;
+
+text-align: left;
+
+border-radius: 20px;
+
+background:
+    rgba(19,24,45,.82);
+
+border:
+    1px solid
+    rgba(255,255,255,.12);
+
+box-shadow:
+    0 15px 40px
+    rgba(0,0,0,.3);
+
+backdrop-filter: blur(12px);
+
+transition: .25s;
+
+}
+
+.info-card:hover {
+transform:
+translateY(-3px);
+
+border-color:
+    rgba(255,214,107,.4);
+
+box-shadow:
+    0 20px 50px
+    rgba(0,0,0,.4);
+
+}
+
+.info-card h2 {
+margin-bottom: 10px;
+
+color: #ffd66b;
+
+}
+
+.info-card p {
+color: #c7cbda;
+
+line-height: 1.6;
+
+}
+
+.back-button {
+display: block;
+
+border: none;
+
+border-radius: 12px;
+
+padding:
+    12px 20px;
+
+background:
+    #252b42;
+
+color: white;
+
+font-size: 15px;
+
+cursor: pointer;
+
+transition: .25s;
+
+}
+
+.back-button:hover {
+background:
+#343b58;
+
+transform:
+    translateX(-3px);
+
+}
+
+#infoPage footer {
+margin-top: 40px;
+
+color: #77809b;
+
+}
+
+/* =========================================================
+ELINA THEME
+========================================================= */
+
+#hub.elina {
+background:
+linear-gradient(
+#eeeeee,
+#bdbdbd
+);
+
+color: #111;
+
+}
+
+#hub.elina .hub-title {
+color: #111;
+
+text-shadow:
+    3px 3px 0 white;
+
+}
+
+#hub.elina .hub-subtitle {
+color: #333;
+}
+
+#hub.elina .hub-button {
+background: #111;
+
+box-shadow:
+    6px 6px 0 #555;
+
+}
+
+#hub.elina .hub-button:hover {
+box-shadow:
+9px 9px 0 #333;
+}
+
+/* Elina images stay in full color */
+
+#hub.elina .gallery img {
+border-color: #111;
+}
+
+#hub.elina footer {
+color: #333;
+}
+
+/* =========================================================
+ELINA IMAGE
+========================================================= */
+
+#elinaImage {
+display: none;
+
+position: fixed;
+
+right: 5%;
+bottom: 5%;
+
+width: 330px;
+max-width: 30vw;
+
+border-radius: 20px;
+
+border:
+    5px solid #111;
+
+box-shadow:
+    10px 10px 0 #555,
+    0 20px 40px
+    rgba(0,0,0,.35);
+
+object-fit: cover;
+
+z-index: 20;
+
+animation:
+    elinaImageEnter
+    .8s
+    ease-out;
+
+}
+
+@keyframes elinaImageEnter {
+
+0% {
+    opacity: 0;
+
+    transform:
+        translateY(60px)
+        rotate(-5deg)
+        scale(.8);
+}
+
+100% {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        rotate(0)
+        scale(1);
+}
+
+}
+
+/* =========================================================
+BRUK PIE THEME
+========================================================= */
+
+#hub.bruk {
+background:
+radial-gradient(
+circle at center,
+#fff1b8,
+#c47a32 45%,
+#6b3217 100%
+);
+}
+
+#hub.bruk .hub-title {
+color: #fff3c4;
+
+text-shadow:
+    0 0 15px #ffb347,
+    0 0 40px #ff7b00;
+
+}
+
+#hub.bruk .hub-subtitle {
+color: #ffe0a3;
+}
+
+#hub.bruk .hub-button {
+background:
+linear-gradient(
+135deg,
+#f59e0b,
+#92400e
+);
+}
+
+#hub.bruk .gallery img {
+border-color: #ffd166;
+}
+
+#hub.bruk footer {
+color: #ffd166;
+}
+
+#hub.bruk::before {
+content: "🥧";
+
+position: fixed;
+
+left: 7%;
+top: 15%;
+
+font-size: 130px;
+
+animation:
+    pieFloat 3s
+    ease-in-out
+    infinite;
+
+}
+
+@keyframes pieFloat {
+
+0%,
+100% {
+    transform:
+        rotate(-8deg)
+        translateY(0);
+}
+
+50% {
+    transform:
+        rotate(8deg)
+        translateY(-20px);
+}
+
+}
+
+/* =========================================================
+BOOK THEMES
+========================================================= */
+
+#hub.beckett,
+#hub.william {
+background:
+linear-gradient(
+135deg,
+#21160e,
+#5c3b20,
+#1c120b
+);
+}
+
+#hub.beckett .hub-title,
+#hub.william .hub-title {
+font-family: Georgia, serif;
+
+color: #f5deb3;
+
+text-shadow:
+    0 0 15px #c59b6d;
+
+}
+
+#hub.beckett .hub-subtitle,
+#hub.william .hub-subtitle {
+font-family: Georgia, serif;
+
+color: #dec29a;
+
+}
+
+#hub.beckett .hub-button,
+#hub.william .hub-button {
+background:
+linear-gradient(
+135deg,
+#8b5e34,
+#422817
+);
+
+border:
+    1px solid #d1a36a;
+
+}
+
+#hub.beckett .gallery img,
+#hub.william .gallery img {
+border-color: #d1a36a;
+}
+
+#hub.beckett footer,
+#hub.william footer {
+color: #cda873;
+}
+
+#hub.beckett::before,
+#hub.william::before {
+content: "📖";
+
+position: fixed;
+
+right: 7%;
+top: 12%;
+
+font-size: 120px;
+
+transform:
+    rotate(12deg);
+
+}
+
+/* =========================================================
+ASHWATH MATH THEME
+========================================================= */
+
+#hub.ashwath {
+background:
+linear-gradient(
+135deg,
+#071a12,
+#064e3b,
+#022c22
+);
+}
+
+#hub.ashwath .hub-title {
+color: #86efac;
+
+text-shadow:
+    0 0 15px #22c55e,
+    0 0 35px #16a34a;
+
+}
+
+#hub.ashwath .hub-subtitle {
+color: #a7f3d0;
+}
+
+#hub.ashwath .hub-button {
+background:
+linear-gradient(
+135deg,
+#10b981,
+#047857
+);
+}
+
+#hub.ashwath .gallery img {
+border-color: #34d399;
+}
+
+#hub.ashwath footer {
+color: #6ee7b7;
+}
+
+#hub.ashwath::before {
+content:
+"∑ π √ x² ∫";
+
+position: fixed;
+
+left: 0;
+right: 0;
+
+top: 50%;
+
+text-align: center;
+
+font-size: 70px;
+
+letter-spacing: 25px;
+
+color:
+    rgba(110,231,183,.08);
+
+pointer-events: none;
+
+}
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media (max-width: 850px) {
+
+body {
+    overflow-y: auto;
+}
+
+#loginScreen {
+    overflow-y: auto;
+}
+
+.login-container {
+    position: relative;
+
+    width: 100%;
+    max-width: 430px;
+
+    height: auto;
+
+    left: auto;
+    top: auto;
+
+    transform: none;
+
+    margin:
+        0 auto;
+
+    padding:
+        20px 0 50px;
+}
+
+.lamp-area {
+    position: relative;
+
+    left: auto;
+    top: auto;
+
+    margin:
+        0 auto;
+
+    transform:
+        scale(.75);
+}
+
+.login-card {
+    position: relative;
+
+    right: auto;
+    top: auto;
+
+    margin:
+        -70px auto 0;
+
+    width:
+        min(390px, 92vw);
+}
+
+.hub-title {
+    font-size: 50px;
+}
+
+.gallery img {
+    width: 90%;
+}
+
+#elinaImage {
+    position: relative;
+
+    right: auto;
+    bottom: auto;
+
+    display: none;
+
+    width: 80%;
+    max-width: 350px;
+
+    margin:
+        20px auto;
+}
+
+.info-container {
+    padding:
+        25px 15px 50px;
+}
+
+.info-container h1 {
+    font-size: 42px;
+}
+
+.info-intro {
+    font-size: 16px;
+}
+
+.info-card {
+    padding: 20px;
+}
+
+.back-button {
+    margin-bottom: 10px;
+}
+
+}
+
+</style> </head> <body> <!-- ======================================================= LOGIN SCREEN ======================================================= --> <div id="loginScreen">
+<div class="stars"></div>
+
+<div class="login-container">
+
+    <!-- LAMP -->
+
+    <div class="lamp-area">
+
+        <div
+            class="lamp"
+            id="lamp">
+
+            <div class="light"></div>
+
+            <div class="shade">
+
+                <div class="bulb"></div>
+
+                <div class="eye left"></div>
+
+                <div class="eye right"></div>
+
+                <div class="mouth"></div>
+
+            </div>
+
+            <div class="arm"></div>
+
+            <div class="base"></div>
+
+            <button
+                class="switch"
+                id="lampSwitch"
+                type="button">
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- LOGIN CARD -->
+
+    <div class="login-card">
+
+        <h1>
+            Welcome
+        </h1>
+
+        <p class="subtitle">
+            Enter your access code to continue.
+        </p>
+
+        <form id="loginForm">
+
+            <div class="input-group">
+
+                <label for="code">
+                    Access Code
+                </label>
+
+                <div class="input-box">
+
+                    <input
+                        type="text"
+                        id="code"
+                        placeholder="Enter access code"
+                        autocomplete="off"
+                        required
+                    >
+
+                    <span class="code-icon">
+                        🔐
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button
+                class="login-btn"
+                type="submit">
+
+                Enter
+
+            </button>
+
+            <div
+                class="message"
+                id="message">
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</div> <!-- ======================================================= N6G HUB ======================================================= --> <div id="hub">
+<!-- ELINA IMAGE -->
+
+<img
+    id="elinaImage"
+    src="OIP.webp"
+    alt="Elina theme image"
+>
+
+<div class="hub-container">
+
+    <h1 class="hub-title">
+        N6G
+    </h1>
+
+    <div class="hub-subtitle">
+        Welcome to my game hub
+    </div>
+
+    <div class="buttons">
+
+        <a
+            class="hub-button"
+            href="snake.html">
+            🐍 Snake
+        </a>
+
+        <a
+            class="hub-button"
+            href="clicker.html">
+            🖱️ Clicker
+        </a>
+
+        <a
+            class="hub-button"
+            href="https://archadiax.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer">
+            🌎 Archadiax
+        </a>
+
+        <a
+            class="hub-button"
+            href="plat.html"
+            target="_blank">
+            🎮 Platformer
+        </a>
+
+        <!-- INFO BUTTON -->
+
+        <button
+            type="button"
+            class="hub-button"
+            onclick="showInfo()">
+            ℹ️ Info
+        </button>
+
+    </div>
+
+    <div class="gallery">
+
+        <img
+            src="IMG_0005.PNG"
+            alt="N6G image"
+        >
+
+        <img
+            src="IMG_0021.JPG"
+            alt="N6G image"
+        >
+
+    </div>
+
+    <footer>
+        N6G • Games • Projects • More coming soon
+    </footer>
+
+</div>
+
+</div> <!-- ======================================================= INFO PAGE ======================================================= --> <div id="infoPage">
+<div class="info-container">
+
+    <button
+        class="back-button"
+        onclick="hideInfo()">
+
+        ← Back to N6G
+
+    </button>
+
+    <h1>
+        N6G Info
+    </h1>
+
+    <p class="info-intro">
+        Welcome to N6G — a personal hub for games,
+        projects, experiments, and other things
+        I'm working on.
+    </p>
+
+    <!-- GAMES -->
+
+    <div class="info-card">
+
+        <h2>
+            🎮 Games
+        </h2>
+
+        <p>
+            Play the games available in the N6G hub,
+            including Snake and Clicker.
+        </p>
+
+    </div>
+
+    <!-- PROJECTS -->
+
+    <div class="info-card">
+
+        <h2>
+            🌎 Projects
+        </h2>
+
+        <p>
+            Explore projects such as Archadiax and
+            other experiments created for N6G.
+        </p>
+
+    </div>
+
+    <!-- ABOUT -->
+
+    <div class="info-card">
+
+        <h2>
+            💡 About N6G
+        </h2>
+
+        <p>
+            N6G is a place for games, ideas,
+            projects, and whatever comes next.
+        </p>
+
+    </div>
+
+    <footer>
+        N6G • Games • Projects • More coming soon
+    </footer>
+
+</div>
+
+</div> <script>
+/* =========================================================
+GET ELEMENTS
+========================================================= */
+
+const loginScreen =
+document.getElementById("loginScreen");
+
+const hub =
+document.getElementById("hub");
+
+const lamp =
+document.getElementById("lamp");
+
+const lampSwitch =
+document.getElementById("lampSwitch");
+
+const codeInput =
+document.getElementById("code");
+
+const loginForm =
+document.getElementById("loginForm");
+
+const message =
+document.getElementById("message");
+
+const elinaImage =
+document.getElementById("elinaImage");
+
+const infoPage =
+document.getElementById("infoPage");
+
+/* =========================================================
+LAMP SWITCH
+========================================================= */
+
+lampSwitch.addEventListener(
+"click",
+function() {
+
+    lamp.classList.toggle("off");
+
+}
+
+);
+
+/* =========================================================
+LAMP REACTION
+========================================================= */
+
+codeInput.addEventListener(
+"focus",
+function() {
+
+    lamp.classList.add("focus-code");
+
+}
+
+);
+
+codeInput.addEventListener(
+"blur",
+function() {
+
+    lamp.classList.remove("focus-code");
+
+}
+
+);
+
+codeInput.addEventListener(
+"input",
+function() {
+
+    lamp.classList.add("focus-code");
+
+}
+
+);
+
+/* =========================================================
+ACCESS CODES
+========================================================= */
+
+const accessCodes = {
+
+ELINA: "elina",
+
+BRUK: "bruk",
+
+BECKETT: "beckett",
+
+WILLIAM: "william",
+
+ASHWATH: "ashwath"
+
+};
+
+/* =========================================================
+CHANGE TO HUB
+========================================================= */
+
+function activateHub(user) {
+
+loginScreen.style.display =
+    "none";
+
+hub.style.display =
+    "block";
+
+hub.className =
+    user.toLowerCase();
+
+/* Show image only for ELINA */
+
+if (user === "ELINA") {
+
+    elinaImage.style.display =
+        "block";
+
+} else {
+
+    elinaImage.style.display =
+        "none";
+
+}
+
+}
+
+/* =========================================================
+LOGIN
+========================================================= */
+
+loginForm.addEventListener(
+"submit",
+function(event) {
+
+    event.preventDefault();
+
+    const enteredCode =
+        codeInput.value
+            .trim()
+            .toUpperCase();
+
+    if (accessCodes[enteredCode]) {
+
+        message.textContent =
+            "✓ Access granted!";
+
+        message.className =
+            "message success";
+
+        lamp.classList.remove(
+            "focus-code"
+        );
+
+        lamp.classList.add(
+            "happy"
+        );
+
+        setTimeout(
+            function() {
+
+                activateHub(
+                    enteredCode
+                );
+
+            },
+            650
+        );
+
+    } else {
+
+        message.textContent =
+            "✕ Invalid access code.";
+
+        message.className =
+            "message error";
+
+        lamp.classList.add(
+            "focus-code"
+        );
+
+    }
+
+}
+
+);
+
+/* =========================================================
+INFO PAGE
+========================================================= */
+
+function showInfo() {
+
+infoPage.style.display =
+    "block";
+
+infoPage.scrollTop =
+    0;
+
+}
+
+function hideInfo() {
+
+infoPage.style.display =
+    "none";
+
+}
+
+/* =========================================================
+ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+"keydown",
+function(event) {
+
+    if (
+        event.key === "Escape" &&
+        infoPage.style.display === "block"
+    ) {
+
+        hideInfo();
+
+    }
+
+}
+
+);
+
+</script> </body> </html>
