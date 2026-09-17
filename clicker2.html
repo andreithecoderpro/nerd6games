@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Andrei's Universe: The Factory Fix</title>
+        <link rel="icon" type="image/gif" href="IMG_0014.gif">
+
+        <style>
+            body {
+                display: flex; justify-content: center; align-items: center;
+                height: 100vh; margin: 0; font-family: "Segoe UI", sans-serif;
+                background-color: #000; color: white; overflow: hidden; user-select: none;
+            }
+            #star-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; transition: 0.5s; }
+            .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; }
+
+            .frenzy-active #star-container { transform: scale(1.5); filter: blur(2px) hue-rotate(90deg); }
+            @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+            .frenzy-planet { animation: pulse 0.2s infinite !important; }
+            #frenzyTimer { color: #ff0055; font-weight: bold; font-size: 18px; display: none; margin-top: 5px; }
+
+            .cargo-box {
+                position: absolute; width: 60px; height: 60px; 
+                background: #333; border: 3px solid #fff; border-radius: 12px;
+                cursor: pointer; z-index: 1500; display: flex; align-items: center;
+                justify-content: center; font-size: 30px;
+                box-shadow: 0 0 20px #fff; animation: drift 10s linear forwards;
+            }
+            @keyframes drift {
+                0% { transform: translate(-100px, 30vh) rotate(0deg); }
+                100% { transform: translate(110vw, 70vh) rotate(720deg); }
+            }
+
+            #mapModal {
+                display: none; position: fixed; z-index: 2000;
+                left: 0; top: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.95); justify-content: center; align-items: center;
+            }
+            .map-content { background: #0a0a0a; padding: 40px; border-radius: 24px; border: 2px solid #333; text-align: center; width: 60%; }
+            .map-node { display: inline-block; width: 70px; height: 70px; margin: 15px; border-radius: 50%; line-height: 70px; font-size: 28px; border: 3px solid #222; filter: grayscale(1); opacity: 0.3; transition: 0.5s; }
+            .node-active { filter: grayscale(0); opacity: 1; border-color: #00d4ff; box-shadow: 0 0 20px #00d4ff; background: #111; }
+
+            .game-container { display: flex; width: 95vw; height: 85vh; gap: 20px; z-index: 1; }
+            .panel { 
+                flex: 1; padding: 30px; background: rgba(10, 10, 15, 0.95); 
+                border: 1px solid #333; border-radius: 24px; 
+                display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                position: relative; backdrop-filter: blur(10px);
+            }
+            
+            #score { font-size: 48px; margin: 5px 0; font-weight: bold; }
+            #Clicker { width: 240px; height: 240px; border-radius: 50%; border: none; cursor: pointer; transition: 0.05s; z-index: 2; }
+            #Clicker:active { transform: scale(0.92); }
+
+            .shop-item { width: 100%; padding: 14px; margin: 5px; font-weight: bold; cursor: pointer; background: #1a1a20; color: #ccc; border: 1px solid #444; border-radius: 12px; }
+            .shop-item:hover:not(:disabled) { background: #2a2a35; border-color: #00d4ff; color: white; }
+            
+            #btnJump { display: none; background: linear-gradient(45deg, #00d4ff, #8a2be2); color: white; border: none; }
+            #warp { position: fixed; top:0; left:0; width:100%; height:100%; background: white; opacity: 0; z-index: 9999; pointer-events: none; transition: opacity 0.6s; }
+
+            .floating-number { 
+                position: absolute; font-weight: bold; font-size: 28px;
+                pointer-events: none; z-index: 3000; text-shadow: 2px 2px 4px #000;
+                animation: floatUp 0.8s ease-out forwards; 
+            }
+            @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-160px); opacity: 0; } }
+        </style>
+    </head>
+    <body id="gameBody">
+        <div id="warp"></div>
+        <div id="star-container"></div>
+        <audio id="clickSound" src="https://www.fesliyanstudios.com/play-mp3/6659"></audio>
+
+        <div id="mapModal">
+            <div class="map-content">
+                <h2 style="color: #00d4ff;">GALACTIC PROGRESS</h2>
+                <div style="display: flex; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
+                    <div><div id="node1" class="map-node node-active">🌌</div><p>Milky Way</p></div>
+                    <div><div id="node2" class="map-node">✨</div><p>Andromeda</p></div>
+                    <div><div id="node3" class="map-node">🌑</div><p>The Void</p></div>
+                    <div><div id="node4" class="map-node">💰</div><p>Empire</p></div>
+                    <div><div id="node5" class="map-node">⌛</div><p>Eternal</p></div>
+                </div>
+                <button class="shop-item" onclick="closeMap()" style="width: 200px;">Back to Planet</button>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="panel">
+                <h2 id="galName" style="color:#00d4ff;">Milky Way</h2>
+                <h1 id="score">0</h1>
+                <div id="frenzyTimer">SUPERNOVA FRENZY: 10s</div>
+                <div id="grow"><button id="Clicker"></button></div>
+                <h3 id="planetName" style="margin-top:25px;">Stage 1: Earth</h3>
+                <p id="mLevelDisp" style="color:#666; font-size: 12px;">Galaxy Progress: 0 / 21 Missions</p>
+            </div>
+
+            <div class="panel">
+                <button class="shop-item" style="background:#4b0082; color: white;" onclick="openMap()">VIEW GALAXY MAP</button>
+                <button class="shop-item" id="btnJump" onclick="jump()">JUMP TO NEXT GALAXY</button>
+                <button class="shop-item" id="buyMission" onclick="buyMission()" style="background:#28a745; color:white;">Launch Mission (50)</button>
+                <button class="shop-item" id="buyExp" onclick="buyAuto('exp')">Buy Explorer (15)</button>
+                <button class="shop-item" id="buyTeam" onclick="buyAuto('team')">Explorer Team (100)</button>
+                <button class="shop-item" id="buyFac" onclick="buyAuto('fac')">Space Factory (1,000)</button>
+                <div style="text-align: left; width: 100%; padding-left: 10px; margin-top: 10px;">
+                    <p id="pps" style="font-size: 14px; margin: 2px 0;">PPS: 0</p>
+                    <p id="ppc" style="font-size: 14px; margin: 2px 0; color: #28a745;">PPC: 1</p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let count = 0, pps = 0, ppc = 1, mLevel = 0, curGal = 1, galMult = 1;
+            let mCost = 50, mRewardBase = 5, lastMouseX = 0, lastMouseY = 0;
+            let costs = { exp: 15, team: 100, fac: 1000 };
+            let frenzyActive = false, frenzyTime = 0;
+
+            const planetData = {
+                1: { name: "Milky Way", color: "#00d4ff", stages: ["Earth", "Mars", "Jupiter", "Saturn", "Neptune", "Sun", "Black Hole"], colors: ["#2b580c", "#e27b58", "#d39d38", "#e4d5b7", "#212354", "#fff", "#000"], glows: ["#007bff", "#e27b58", "#d39d38", "#c5a367", "#3e54e8", "#ff0000", "#8a2be2"] },
+                2: { name: "Andromeda", color: "#8a2be2", stages: ["Meteor", "Dwarf Planet", "Crystalline", "Gas Wraith", "Neutron Star", "Supergiant", "Void Hole"], colors: ["#555", "#888", "cyan", "#4b0082", "white", "#f00", "#000"], glows: ["#333", "#666", "#00ffff", "#8a2be2", "#00d4ff", "#400", "#ff00ff"] },
+                3: { name: "The Void", color: "#ffffff", stages: ["Shadow", "Echo", "Ghost", "Singularity", "Event Horizon", "Abyss", "Ancient Eye"], colors: ["#111", "#050505", "#222", "#000", "#000", "#000", "red"], glows: ["#222", "#111", "#444", "#fff", "#333", "#111", "#000"] },
+                4: { name: "Golden Empire", color: "#ffd700", stages: ["Pyrite", "Solid Gold", "Diamond Core", "Antimatter", "Wealth Star", "Royal Sun", "Midas Sun"], colors: ["#8a6d3b", "gold", "#e0ffff", "#330033", "#ffd700", "#fff", "gold"], glows: ["#5e4a27", "#ffd700", "#fff", "#ff00ff", "#fff", "gold", "#fff"] },
+                5: { name: "Eternal Rift", color: "#ff00ff", stages: ["Fragment", "Glitch", "Data Stream", "Paradox", "Broken Time", "The Rift", "Omega Point"], colors: ["#222", "#444", "#003300", "#fff", "#111", "#000", "white"], glows: ["#f0f", "#0ff", "#0f0", "#000", "#fff", "#f0f", "cyan"] }
+            };
+
+            // SEPARATED UI Update (Numbers and Buttons)
+            function updateUI() {
+                document.getElementById('score').innerText = format(count);
+                document.getElementById('buyMission').innerText = `Launch Mission (${format(mCost)})`;
+                document.getElementById('buyExp').innerText = `Buy Explorer (${format(costs.exp)})`;
+                document.getElementById('buyTeam').innerText = `Explorer Team (${format(costs.team)})`;
+                document.getElementById('buyFac').innerText = `Space Factory (${format(costs.fac)})`;
+                document.getElementById('mLevelDisp').innerText = `Galaxy Progress: ${mLevel} / 21 Missions`;
+                document.getElementById('pps').innerText = "PPS: " + format(pps);
+                document.getElementById('ppc').innerText = "PPC: " + format(frenzyActive ? ppc * 3 : ppc);
+                document.getElementById('btnJump').style.display = (mLevel >= 21 && curGal < 5) ? "block" : "none";
+                document.getElementById('buyMission').disabled = (count < mCost) || (mLevel >= 21);
+                document.getElementById('buyExp').disabled = count < costs.exp;
+                document.getElementById('buyTeam').disabled = count < costs.team;
+                document.getElementById('buyFac').disabled = count < costs.fac;
+            }
+
+            // SEPARATED Visual Update (Planet ONLY) - No chance of Earth reset now!
+            function updatePlanetAppearance() {
+                const gal = planetData[curGal];
+                const stageIdx = Math.min(Math.max(Math.floor(mLevel / 3), 0), 6);
+                
+                document.getElementById('galName').innerText = gal.name;
+                document.getElementById('galName').style.color = gal.color;
+                document.getElementById('planetName').innerText = `Stage ${stageIdx + 1}: ${gal.stages[stageIdx]}`;
+                
+                const clicker = document.getElementById('Clicker');
+                clicker.style.background = gal.colors[stageIdx];
+                clicker.style.boxShadow = `0 0 50px ${gal.glows[stageIdx]}`;
+            }
+
+            function startFrenzy() {
+                frenzyActive = true;
+                frenzyTime = 10;
+                document.getElementById('gameBody').classList.add('frenzy-active');
+                document.getElementById('Clicker').classList.add('frenzy-planet');
+                document.getElementById('frenzyTimer').style.display = 'block';
+                
+                let interval = setInterval(() => {
+                    frenzyTime--;
+                    document.getElementById('frenzyTimer').innerText = `SUPERNOVA FRENZY: ${frenzyTime}s`;
+                    if(frenzyTime <= 0) {
+                        frenzyActive = false;
+                        document.getElementById('gameBody').classList.remove('frenzy-active');
+                        document.getElementById('Clicker').classList.remove('frenzy-planet');
+                        document.getElementById('frenzyTimer').style.display = 'none';
+                        clearInterval(interval);
+                        updateUI();
+                    }
+                }, 1000);
+                updateUI();
+            }
+
+            function spawnCargo() {
+                const box = document.createElement('div');
+                box.className = 'cargo-box'; box.innerText = "📦";
+                box.style.borderColor = planetData[curGal].color;
+                box.style.boxShadow = `0 0 20px ${planetData[curGal].color}`;
+                box.style.left = "-80px";
+                box.onclick = function() {
+                    startFrenzy();
+                    box.remove();
+                };
+                document.body.appendChild(box);
+                setTimeout(() => { if(box) box.remove(); }, 10000);
+            }
+
+            window.addEventListener('keydown', (e) => {
+                if(e.key.toLowerCase() === 'q') {
+                    let a = prompt("Cheat Console: How much score?");
+                    if (a && !isNaN(a)) { count += parseFloat(a); updateUI(); }
+                }
+                if(e.key.toLowerCase() === 'r') { doClick(lastMouseX || window.innerWidth/2, lastMouseY || window.innerHeight/2); }
+            });
+
+            function doClick(x, y) {
+                let gain = frenzyActive ? ppc * 3 : ppc;
+                count += gain;
+                showFloat(x, y, "+" + format(gain));
+                document.getElementById('clickSound').currentTime = 0;
+                document.getElementById('clickSound').play().catch(()=>{});
+                updateUI();
+                // NO updatePlanetAppearance() call here.
+            }
+
+            document.getElementById('Clicker').onmousedown = (e) => { lastMouseX = e.pageX; lastMouseY = e.pageY; doClick(e.pageX, e.pageY); };
+
+            function buyMission() {
+                if(count >= mCost && mLevel < 21) {
+                    count -= mCost; mLevel++;
+                    ppc += (mRewardBase * galMult);
+                    mRewardBase = Math.round(mRewardBase * 2.5);
+                    mCost = Math.round(mCost * 4.5);
+                    updatePlanetAppearance(); // Only update here!
+                    updateUI();
+                }
+            }
+
+            function buyAuto(type) {
+                if(count >= costs[type]) {
+                    count -= costs[type];
+                    if(type === 'exp') pps += 1 * galMult;
+                    if(type === 'team') pps += 10 * galMult;
+                    if(type === 'fac') pps += 100 * galMult;
+                    costs[type] = Math.round(costs[type] * 1.3);
+                    updateUI();
+                    // NO updatePlanetAppearance() call here.
+                }
+            }
+
+            function jump() {
+                document.getElementById('warp').style.opacity = "1";
+                setTimeout(() => {
+                    curGal++; galMult *= 500;
+                    count = 0; pps = 0; mLevel = 0; 
+                    ppc = 1 * galMult; mCost = 50 * galMult; mRewardBase = 5 * galMult;
+                    costs = { exp: 15 * galMult, team: 100 * galMult, fac: 1000 * galMult };
+                    document.getElementById('node'+curGal).classList.add('node-active');
+                    updatePlanetAppearance(); // And here!
+                    updateUI();
+                    document.getElementById('warp').style.opacity = "0";
+                }, 600);
+            }
+
+            function openMap() { document.getElementById('mapModal').style.display = 'flex'; }
+            function closeMap() { document.getElementById('mapModal').style.display = 'none'; }
+
+            function format(n) {
+                if(n >= 1e15) return (n/1e15).toFixed(1) + " Qa";
+                if(n >= 1e12) return (n/1e12).toFixed(1) + " T";
+                if(n >= 1e9) return (n/1e9).toFixed(1) + " B";
+                if(n >= 1e6) return (n/1e6).toFixed(1) + " M";
+                return Math.floor(n).toLocaleString();
+            }
+
+            function showFloat(x, y, t) {
+                const f = document.createElement('div'); f.className = 'floating-number'; f.innerText = t;
+                f.style.color = frenzyActive ? "#ff0055" : planetData[curGal].color;
+                f.style.left = (x - 20) + 'px'; f.style.top = (y - 20) + 'px'; 
+                document.body.appendChild(f); setTimeout(() => f.remove(), 800);
+            }
+
+            const sc = document.getElementById('star-container');
+            for(let i=0; i<150; i++) {
+                const s = document.createElement('div'); s.className='star';
+                s.style.left = Math.random()*100+'vw'; s.style.top = Math.random()*100+'vh';
+                s.style.width = s.style.height = (Math.random()*2+1)+'px'; sc.appendChild(s);
+            }
+
+            setInterval(() => { if(pps > 0) { count += pps/10; updateUI(); } }, 100);
+            setInterval(spawnCargo, 25000); 
+            
+            updatePlanetAppearance(); // Final safety check at startup
+            updateUI();
+        </script>
+    </body>
+</html>
